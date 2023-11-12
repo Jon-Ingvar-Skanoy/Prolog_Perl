@@ -2,33 +2,48 @@
 
 read_File(Infile):-
         open(Infile, read, Stream),
-        read_lines_find_size(Stream, not_in_list, Puzzles),
+        read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
+        writeln(Puzzles_out),
         close(Stream).
 
-read_lines_find_size(Stream,not_in_list, Puzzles):-
+read_lines_find_size(Stream,not_in_list,Puzzles_in, Puzzles_out):-
     read_line_to_string(Stream,Line),
-    (Line == end_of_file -> true ;
+    (Line == end_of_file ->
+
+    Puzzles_out = Puzzles_in
+
+
+    ;
     (is_new_puzzle_line(Line) ->
     get_size(Line,Size),
     split_string(Size, "x","", [W,H]),
     number_string(Width, W),
     number_string(Height, H),
-    writeln(Width),
-    writeln(Height),
-    read_lines_to_list(Stream, in_list, Width,Height, [],  Puzzles)
+    read_lines_to_list(Stream, in_list, Width,Height, [], Puzzle),
+    writeln(Puzzle),
+    append(Puzzles_in,[Puzzle], Puzzles_in2),
+    read_lines_find_size(Stream, not_in_list, Puzzles_in2,Puzzles_out)
     ;
-    read_lines_find_size(Stream, not_in_list, Puzzles)
+    read_lines_find_size(Stream, not_in_list, [], Puzzles_out)
     ),
 
     true
 
     ).
-read_lines_to_list(Stream, in_list, Width,Height, Creation_list,Puzzles):-
-    read_line_to_string(Stream, Line),
-    writeln(Line),
-    (Line == end_of_file -> true ;
-    read_lines_find_size(Stream, not_in_list, Puzzles)
-    ).
+read_lines_to_list(Stream, in_list, Width,Height, Creation_list,Puzzle):-
+    length(Creation_list,CurrentHeight),
+
+    (CurrentHeight < Height ->
+        read_line_to_string(Stream, Line),
+        writeln(Line),
+        append(Creation_list,[0],Appended_List),
+        (Line == end_of_file -> true ;
+        read_lines_to_list(Stream, in_list, Width,Height, Appended_List,  Puzzle)
+        )
+    ;
+    Puzzle = Creation_list
+    )
+    .
 
 
 is_new_puzzle_line(Line):-

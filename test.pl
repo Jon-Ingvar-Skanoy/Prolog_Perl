@@ -27,6 +27,8 @@ readLines(Stream, in_list, AccumulatedList, Width, Height) :-
         writeln(AccumulatedList),
         (CurrentHeight =:= Height -> readLines(Stream, not_in_list, [], 0, 0) ; true)
     ).
+
+
 readLines(Stream, not_in_list, _, _, _) :-
     read_line_to_string(Stream, Line),
     (Line == end_of_file -> true ;
