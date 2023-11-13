@@ -11,8 +11,19 @@ solve_Puzzle(Puzzle,Solution):-
     nth0(0,Puzzle,Line),
     nth0(0,Line,Tile),
 
-    illegalTurn(Tile),
-    not(notCrowded(Tile)).
+    %illegalTurn(Tile),
+    %not(notCrowded(Tile)),
+    borders(Puzzle).
+
+
+borders(Puzzle):-
+    last(Puzzle,Last_line),
+
+    nth0(0,Puzzle,First_Line),
+    maplist(illegal_Down,Last_line),
+    maplist(illegal_Up,First_Line),
+    process_subList_border(Puzzle).
+
 
 
 read_lines_find_size(Stream,not_in_list,Puzzles_in, Puzzles_out):-
@@ -99,10 +110,7 @@ illegalTurn(Tile):-
 
 notCrowded(Tile):-
     get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
-    Left = true,
-    Right = true,
-    Down = false,
-    Up = false,
+
 
     (
     [Left,Right,Down,Up] == [true,true,true,true]
@@ -121,7 +129,33 @@ notCrowded(Tile):-
     ;
     [Left,Right,Down,Up] == [true,false,false,false]
     ),
-    writeln(Tile)
+    writeln(Tile).
 
-    .
+
+process_subList_border([]).
+process_subList_border([Sublist|Sublists]):-
+
+    last(Sublist,Tile),
+     nth0(0,Sublist,Tile2),
+    illegal_Right(Tile),
+    illegal_Left(Tile2),
+    writeln(Sublist),
+    process_subList_borde(Sublists).
+
+
+
+
+illegal_Down(Tile):-
+    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
+    Down = false.
+
+illegal_Up(Tile):-
+    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
+    Up = false.
+illegal_Right(Tile):-
+    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
+    Right = false.
+illegal_Left(Tile):-
+    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
+    Left = false.
 
