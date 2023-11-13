@@ -5,16 +5,57 @@ read_File(Infile):-
         read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
         nth0(0,Puzzles_out,Puzzle_1),
         solve_Puzzle(Puzzle_1, Solution),
-        close(Stream).
+       % close(Stream),
+        true
+        .
 
 solve_Puzzle(Puzzle,Solution):-
     nth0(0,Puzzle,Line),
     nth0(0,Line,Tile),
-
     %illegalTurn(Tile),
     %not(notCrowded(Tile)),
-    borders(Puzzle).
+    unnamed(Puzzle),
+    borders(Puzzle),
+    single_tile_rules(Puzzle).
 
+single_tile_rules([]).
+single_tile_rules([Line1|Puzzle_rest]):-
+    maplist(illegalTurn,Line1),
+    %maplist(validTile,Line1),
+    writeln(Line1),
+    single_tile_rules(Puzzle_rest)
+    .
+
+unnamed(Puzzle):-
+    [Line1 | Puzzle_rest] = Puzzle,
+    unnamed_down(Line1,Puzzle_rest).
+
+
+unnamed_down([]).
+
+unnamed_down([],[]).
+
+unnamed_down(Line1,[Line2|Sublist]):-
+
+    unnamed_down_tile(Line1,Line2),
+
+    length(Sublist,Len),
+
+    (Len == 0 -> true;
+    unnamed_down(Line2,Sublist)
+    )
+    .
+
+
+
+unnamed_down_tile([],[]).
+
+unnamed_down_tile([Tile1|Line1],[Tile2|Line2]):-
+    get_elements_from_tile(Tile1,[Type1,Left1,Down1,Up1,Right1]),
+    get_elements_from_tile(Tile2,[Type2,Left2,Down2,Up2,Right2]),
+    Down1 = Up2,
+
+    unnamed_down_tile(Line1,Line2).
 
 borders(Puzzle):-
     last(Puzzle,Last_line),
@@ -100,36 +141,35 @@ illegalTurn(Tile):-
 
     (Type = "*" ->
       dif(Left,Right),
-      dif(Up,Down),
+      dif(Up,Down)
 
-      writeln(Tile)
+
     ;
     true
     ).
 
 
-notCrowded(Tile):-
+validTile(Tile):-
     get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
-
-
+    Left == true; Left == false,
+       Right == true; Right == false,
+       Down == true; Down == false,
+       Up == true; Up == false,
     (
-    [Left,Right,Down,Up] == [true,true,true,true]
-    ;
-    [Left,Right,Down,Up] == [true,true,true,false]
-    ;
-    [Left,Right,Down,Up] == [true,true,false,true]
-    ;
-    [Left,Right,Down,Up] == [false,false,true,true]
-    ;
-    [Left,Right,Down,Up] == [false,false,false,true]
-    ;
-    [Left,Right,Down,Up] == [false,false,true,false]
-    ;
-    [Left,Right,Down,Up] == [false,true,false,false]
-    ;
-    [Left,Right,Down,Up] == [true,false,false,false]
-    ),
-    writeln(Tile).
+        [Left,Right,Down,Up] == [true,true,false,false]
+        ;
+        [Left,Right,Down,Up] == [true,false,true,false]
+        ;
+        [Left,Right,Down,Up] == [true,false,false,true]
+        ;
+        [Left,Right,Down,Up] == [false,true,true,false]
+        ;
+        [Left,Right,Down,Up] == [false,true,true,false]
+        ;
+        [Left,Right,Down,Up] == [false,false,true,true]
+
+        )
+    .
 
 
 process_subList_border([]).
@@ -139,7 +179,7 @@ process_subList_border([Sublist|Sublists]):-
      nth0(0,Sublist,Tile2),
     illegal_Right(Tile),
     illegal_Left(Tile2),
-    writeln(Sublist),
+
     process_subList_border(Sublists).
 
 
