@@ -3,8 +3,17 @@
 read_File(Infile):-
         open(Infile, read, Stream),
         read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
-        writeln(Puzzles_out),
+        nth0(0,Puzzles_out,Puzzle_1),
+        solve_Puzzle(Puzzle_1, Solution),
         close(Stream).
+
+solve_Puzzle(Puzzle,Solution):-
+    nth0(0,Puzzle,Line),
+    nth0(0,Line,Tile),
+
+    illegalTurn(Tile),
+    notCrowded(Tile).
+
 
 read_lines_find_size(Stream,not_in_list,Puzzles_in, Puzzles_out):-
     read_line_to_string(Stream,Line),
@@ -30,6 +39,7 @@ read_lines_find_size(Stream,not_in_list,Puzzles_in, Puzzles_out):-
     true
 
     ).
+
 read_lines_to_list(Stream, in_list, Width,Height, Creation_list,Puzzle):-
     length(Creation_list,CurrentHeight),
 
@@ -61,3 +71,48 @@ is_new_puzzle_line(Line):-
 
 get_size(Line,Size):-
     sub_string(Line, 5, _, 0, Size).
+
+get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]):-
+    Tile = [Type,Left,Down,Up,Right].
+
+illegalTurn(Tile):-
+    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
+
+
+    (Type = "o" ->
+    Left = Right,
+    Up = Down,
+    dif(Left,Up)
+    ;
+    true
+    ),
+
+    (Type = "*" ->
+      dif(Left,Right),
+      dif(Up,Down),
+
+      writeln(Tile)
+    ;
+    true
+    ).
+
+
+notCrowded(Tile):-
+    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
+    Left = true,
+    Right = true,
+    Down = false,
+    Up = false,
+    [Left,Right,Down,Up] == [true,true,false,false]
+    ;
+    [Left,Right,Down,Up] == [true,true,true,false]
+    ;
+    [Left,Right,Down,Up] == [true,false,true,true]
+    ;
+    [Left,Right,Down,Up] == [true,false,false,true]
+    ;
+    [Left,Right,Down,Up] == [false,true,true,false]
+    ;
+    [Left,Right,Down,Up] == [false,true,false,true]
+    ;
+    [Left,Right,Down,Up] == [false,false,true,true].
