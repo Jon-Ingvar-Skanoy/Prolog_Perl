@@ -12,7 +12,7 @@ solve_Puzzle(Puzzle,Solution):-
     nth0(0,Line,Tile),
 
     illegalTurn(Tile),
-    notCrowded(Tile).
+    not(notCrowded(Tile)).
 
 
 read_lines_find_size(Stream,not_in_list,Puzzles_in, Puzzles_out):-
@@ -103,16 +103,25 @@ notCrowded(Tile):-
     Right = true,
     Down = false,
     Up = false,
-    [Left,Right,Down,Up] == [true,true,false,false]
+
+    (
+    [Left,Right,Down,Up] == [true,true,true,true]
     ;
     [Left,Right,Down,Up] == [true,true,true,false]
     ;
-    [Left,Right,Down,Up] == [true,false,true,true]
+    [Left,Right,Down,Up] == [true,true,false,true]
     ;
-    [Left,Right,Down,Up] == [true,false,false,true]
+    [Left,Right,Down,Up] == [false,false,true,true]
     ;
-    [Left,Right,Down,Up] == [false,true,true,false]
+    [Left,Right,Down,Up] == [false,false,false,true]
     ;
-    [Left,Right,Down,Up] == [false,true,false,true]
+    [Left,Right,Down,Up] == [false,false,true,false]
     ;
-    [Left,Right,Down,Up] == [false,false,true,true].
+    [Left,Right,Down,Up] == [false,true,false,false]
+    ;
+    [Left,Right,Down,Up] == [true,false,false,false]
+    ),
+    writeln(Tile)
+
+    .
+
