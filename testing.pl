@@ -4,8 +4,12 @@ read_File(Infile):-
         open(Infile, read, Stream),
         read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
         nth0(0,Puzzles_out,Puzzle_1),
-        solve_Puzzle(Puzzle_1, Solution),
-       % close(Stream),
+
+        Puzzle_1 = [Line1, Line2| Puzzle_rest],
+        connect_Puzzle(Line1,Line2,Puzzle_rest),
+     %   solve_Puzzle(Puzzle_1, Solution),
+
+      %  close(Stream),
         true
         .
 
@@ -22,7 +26,7 @@ single_tile_rules([]).
 single_tile_rules([Line1|Puzzle_rest]):-
     maplist(illegalTurn,Line1),
     %maplist(validTile,Line1),
-    writeln(Line1),
+
     single_tile_rules(Puzzle_rest)
     .
 
@@ -116,8 +120,9 @@ process_line(Line,List):-
 
     .
 
-extended_element(Element, [Element, _, _, _, _]).
-
+extended_element("_", ["e", _, _, _, _, _, _, _, _, _]).
+extended_element("*", ["*", _, _, _, _, _, _, _, _, _]).
+extended_element("o", ["o", _, _, _, _, _, _, _, _, _]).
 is_new_puzzle_line(Line):-
     sub_string(Line, 0 , _, _, "size ").
 
@@ -125,7 +130,7 @@ get_size(Line,Size):-
     sub_string(Line, 5, _, 0, Size).
 
 get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]):-
-    Tile = [Type,Left,Down,Up,Right].
+    Tile = [Type,Left,Down,Up,Right, _, _, _, _, _].
 
 illegalTurn(Tile):-
     get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
@@ -198,4 +203,75 @@ illegal_Right(Tile):-
 illegal_Left(Tile):-
     get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
     Left = false.
+write_Puzzle(Puzzle):-
 
+    maplist(write_line,Puzzle).
+write_line(Line):-
+    maplist(write_tile,Line),
+    writeln("").
+
+write_tile(Tile):-
+    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
+    write(Type),
+    write(" "),
+    write(Left),
+    write(" "),
+    write(Down),
+    write(" "),
+    write(Up),
+    write(" "),
+    write(Right),
+    write(" ").
+
+writePuzzleDone(Puzzle):-
+    maplist(writeLineDone,Puzzle).
+writeLineDone(Line):-
+    mapList(writeTileDone,Line),
+    writeLn('').
+writeTileDone(['*'|_]):-
+    write('┼').
+ writeTileDone(['o',true,false,false,true|_]):-
+    write('╨').
+ writeTileDone(['o',false,true,true,false|_]):-
+    write('╡').
+writeTileDone(['e',true,true,false,false|_]):-
+    write('┐').
+writeTileDone(['e',true,false,true,false|_]):-
+    write('┘').
+writeTileDone(['e',true,false,false,true|_]):-
+    write('─').
+writeTileDone(['e',false,true,true,false|_]):-
+    write('│').
+writeTileDone(['e',false,false,false,false|_]):-
+    write(' ').
+
+connect_Puzzles(Line1,Line2,[]):-
+    writeln("is it working? this is the function for the second to last row, hopefully2"
+        ),
+    connect_Line(Line1,Line2,Line3,[]),
+    writeln("is it working? this is the function for the second to last row, hopefully"
+    )
+    .
+connect_Puzzle(Line1,Line2,[Line3|Puzzle_rest]):-
+    connect_Line(Line1,Line2,Line3,[]),
+    (Puzzle_rest == [] ->
+    connect_Puzzles(Line2,Line3,[])
+    ;
+    connect_Puzzle(Line2,Line3,Puzzle_rest)
+    )
+   .
+connect_Line([Tile1],[Tile2],[Tile3],Tile):-
+    writeln("test22").
+connect_Line([Tile1|Line1], [Tile2, Tile222|Line2], [Tile3|Line3],Tile22):-
+     writeln("test2"),
+
+    connect_Tile(Tile1,Tile3,Tile22,Tile222,Tile2),
+
+    append([Tile222],Line2,Line_2),
+    writeln(Line_2).
+
+   % connect_Line(Line1,Line_2,Line3,Tile2).
+
+connect_Tile(Tile_up,Tile_down,Tile_Left,Tile_right,Tile_Main):-
+
+    Tile_Main = [_,_,_,_,_,Tile_Left,Tile_down,Tile_up,Tile_right,_].
