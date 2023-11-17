@@ -4,57 +4,63 @@ read_File(Infile):-
         open(Infile, read, Stream),
         read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
         nth0(0,Puzzles_out,Puzzle_1),
-
         Puzzle_1 = [Line1| Puzzle_rest],
         connect_Puzzle(Line0,Line1,Puzzle_rest),
 
-      % solve_Puzzle(Puzzle_1, Solution),
-       write_Puzzle(Puzzle_1),
-      %  close(Stream),
-        true
+
+
+       nth0(0,Puzzle_1,Line1),
+       nth0(0,Line1,Tile1),
+        get_elements_from_tile(Tile1,[Type1,Left1,Down1,Up1,Right1]),
+
+
+
+        solve_Puzzle(Puzzle_1, Solution),
+
+       writePuzzleDone(Puzzle_1)
+
+        %close(Stream)
+
         .
 
 solve_Puzzle(Puzzle,Solution):-
-    nth0(0,Puzzle,Line),
-    nth0(0,Line,Tile),
-
-    %illegalTurn(Tile),
-    %not(notCrowded(Tile)),
-    unnamed(Puzzle),
+    maplist(unnamed_line,Puzzle),
     borders(Puzzle),
-    single_tile_rules(Puzzle).
 
-single_tile_rules([]).
-single_tile_rules([Line1|Puzzle_rest]):-
-    maplist(illegalTurn,Line1),
-    %maplist(validTile,Line1),
+    maplist(valid_Line,Puzzle).
 
-    single_tile_rules(Puzzle_rest)
+unnamed_line(Line):-
+    writeln("d"),
+    maplist(unnamed_tile,Line).
+
+unnamed_tile(Tile):-
+
+    Tile = [Type1,Left1,Down1,Up1,Right1, Tile_Left,Tile_Down,Tile_Up,Tile_Right, _],
+
+    (  Tile_Down == [] ->
+
+    true
+    ;
+
+    Tile_Down = [Type2,Left2,Down2,Up2,Right2, Tile_Left2,Tile_Down2,Tile_Up2,Tile_Right2, _],
+    Up1 = Down2
+    ),
+    (  Tile_Right == [] ->
+
+        true
+        ;
+
+        Tile_Right = [Type3,Left3,Down3,Up3,Right3, Tile_Left3,Tile_Down3,Tile_Up3,Tile_Right3, _],
+        Right1 = Left3
+        )
+
     .
 
-unnamed(Puzzle):-
-    [Line1 | Puzzle_rest] = Puzzle,
-    unnamed_down(Line1,Puzzle_rest).
-
-
-unnamed_down([]).
-
-unnamed_down([],[]).
-
-unnamed_down(Tile).
 
 
 
 
 
-unnamed_down_tile([],[]).
-
-unnamed_down_tile([Tile1|Line1],[Tile2|Line2]):-
-    get_elements_from_tile(Tile1,[Type1,Left1,Down1,Up1,Right1]),
-    get_elements_from_tile(Tile2,[Type2,Left2,Down2,Up2,Right2]),
-    Down1 = Up2,
-
-    unnamed_down_tile(Line1,Line2).
 
 borders(Puzzle):-
     last(Puzzle,Last_line),
@@ -127,50 +133,27 @@ get_size(Line,Size):-
 get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]):-
     Tile = [Type,Left,Down,Up,Right, _, _, _, _, _].
 
-illegalTurn(Tile):-
-    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
 
 
-    (Type = "o" ->
-    Left = Right,
-    Up = Down,
-    dif(Left,Up)
-    ;
-    true
-    ),
 
-    (Type = "*" ->
-      dif(Left,Right),
-      dif(Up,Down)
+valid_Line(Line):-
+    maplist(validTile,Line).
 
+validTile(["*",true,true,false,false|_]).
+validTile(["*",true,false,true,false|_]).
+validTile(["*",false,false,true,true|_]).
+validTile(["*",false,true,false,true|_]).
+validTile(["o",false,true,true,false|_]).
+validTile(["o",true,false,false,true|_]).
+validTile(["e",true,true,false,false|_]).
+validTile(["e",true,false,true,false|_]).
+validTile(["e",false,true,true,false|_]).
+validTile(["e",true,false,false,true|_]).
+validTile(["e",false,true,false,true|_]).
+validTile(["e",false,false,true,true|_]).
+validTile(["e",false,false,false,false|_]).
 
-    ;
-    true
-    ).
-
-
-validTile(Tile):-
-    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
-    Left == true; Left == false,
-       Right == true; Right == false,
-       Down == true; Down == false,
-       Up == true; Up == false,
-    (
-        [Left,Right,Down,Up] == [true,true,false,false]
-        ;
-        [Left,Right,Down,Up] == [true,false,true,false]
-        ;
-        [Left,Right,Down,Up] == [true,false,false,true]
-        ;
-        [Left,Right,Down,Up] == [false,true,true,false]
-        ;
-        [Left,Right,Down,Up] == [false,true,true,false]
-        ;
-        [Left,Right,Down,Up] == [false,false,true,true]
-
-        )
-    .
-
+validTile(["Ø",false,false,false,false|Rest]).
 
 process_subList_border([]).
 process_subList_border([Sublist|Sublists]):-
@@ -221,29 +204,36 @@ write_tile(Tile):-
 writePuzzleDone(Puzzle):-
     maplist(writeLineDone,Puzzle).
 writeLineDone(Line):-
-    mapList(writeTileDone,Line),
-    writeLn('').
-writeTileDone(['*'|_]):-
-    write('┼').
- writeTileDone(['o',true,false,false,true|_]):-
-    write('╨').
- writeTileDone(['o',false,true,true,false|_]):-
-    write('╡').
-writeTileDone(['e',true,true,false,false|_]):-
-    write('┐').
-writeTileDone(['e',true,false,true,false|_]):-
-    write('┘').
-writeTileDone(['e',true,false,false,true|_]):-
-    write('─').
-writeTileDone(['e',false,true,true,false|_]):-
+    maplist(writeTileDone,Line),
+    writeln("").
+writeTileDone(["*"|_]):-
+    write("┼").
+ writeTileDone(["o",true,false,false,true|_]):-
+    write("╨").
+ writeTileDone(["o",false,true,true,false|_]):-
+    write("╡").
+writeTileDone(["e",true,true,false,false|_]):-
+    write("┐").
+writeTileDone(["e",true,false,true,false|_]):-
+    write("┘").
+writeTileDone(["e",true,false,false,true|_]):-
+    write("─").
+writeTileDone(["e",false,true,true,false|_]):-
     write('│').
-writeTileDone(['e',false,false,false,false|_]):-
-    write(' ').
+writeTileDone(["e",false,true,false,true|_]):-
+    write(" ").
+writeTileDone(["e",false,false,true,true|_]):-
+    write(" ").
+writeTileDone(["e",false,false,false,false|_]):-
+    write(" ").
+
 
 connect_Puzzles(Line1,Line2,[]):-
-    writeln("d"),
+
     connect_Line(Line1,Line2,Line3,[]).
+
 connect_Puzzle(Line1,Line2,[Line3|Puzzle_rest]):-
+
     connect_Line(Line1,Line2,Line3,[]),
     (Puzzle_rest == [] ->
     connect_Puzzles(Line2,Line3,[])
@@ -252,11 +242,31 @@ connect_Puzzle(Line1,Line2,[Line3|Puzzle_rest]):-
     )
    .
 connect_Lines([Tile1],[Tile2],[Tile3],Tile):-
+    (nonvar(Tile3) ->
+         true
+         ;
+         Tile3 = []
+         ),
+        (nonvar(Tile1) ->
+         true
+         ;
+         Tile1 = []
+         ),
+
     connect_Tile(Tile1,Tile3,Tile,[],Tile2)
    .
 connect_Line([Tile1|Line1], [Tile2, Tile222|Line2], [Tile3|Line3],Tile22):-
 
-
+    (nonvar(Tile3) ->
+        true
+        ;
+         Tile3 = []
+        ),
+    (nonvar(Tile1) ->
+      true
+       ;
+        Tile1 = []
+      ),
     connect_Tile(Tile1,Tile3,Tile22,Tile222,Tile2),
 
 
