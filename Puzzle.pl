@@ -267,6 +267,7 @@ connect_Line([Tile1|Line1], [Tile2, Tile222|Line2], [Tile3|Line3],Tile22):-
 
     connect_Tile(Tile1,Tile3,Tile22,Tile222,Tile2),
 
+
     append([Tile222],Line2,Line_2),
     writeln(Line_2).
 
