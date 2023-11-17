@@ -5,10 +5,11 @@ read_File(Infile):-
         read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
         nth0(0,Puzzles_out,Puzzle_1),
 
-        Puzzle_1 = [Line1, Line2| Puzzle_rest],
-        connect_Puzzle(Line1,Line2,Puzzle_rest),
-     %   solve_Puzzle(Puzzle_1, Solution),
+        Puzzle_1 = [Line1| Puzzle_rest],
+        connect_Puzzle(Line0,Line1,Puzzle_rest),
 
+      % solve_Puzzle(Puzzle_1, Solution),
+       write_Puzzle(Puzzle_1),
       %  close(Stream),
         true
         .
@@ -16,6 +17,7 @@ read_File(Infile):-
 solve_Puzzle(Puzzle,Solution):-
     nth0(0,Puzzle,Line),
     nth0(0,Line,Tile),
+
     %illegalTurn(Tile),
     %not(notCrowded(Tile)),
     unnamed(Puzzle),
@@ -39,16 +41,9 @@ unnamed_down([]).
 
 unnamed_down([],[]).
 
-unnamed_down(Line1,[Line2|Sublist]):-
+unnamed_down(Tile).
 
-    unnamed_down_tile(Line1,Line2),
 
-    length(Sublist,Len),
-
-    (Len == 0 -> true;
-    unnamed_down(Line2,Sublist)
-    )
-    .
 
 
 
@@ -246,12 +241,8 @@ writeTileDone(['e',false,false,false,false|_]):-
     write(' ').
 
 connect_Puzzles(Line1,Line2,[]):-
-    writeln("is it working? this is the function for the second to last row, hopefully2"
-        ),
-    connect_Line(Line1,Line2,Line3,[]),
-    writeln("is it working? this is the function for the second to last row, hopefully"
-    )
-    .
+    writeln("d"),
+    connect_Line(Line1,Line2,Line3,[]).
 connect_Puzzle(Line1,Line2,[Line3|Puzzle_rest]):-
     connect_Line(Line1,Line2,Line3,[]),
     (Puzzle_rest == [] ->
@@ -260,18 +251,23 @@ connect_Puzzle(Line1,Line2,[Line3|Puzzle_rest]):-
     connect_Puzzle(Line2,Line3,Puzzle_rest)
     )
    .
-connect_Line([Tile1],[Tile2],[Tile3],Tile):-
-    writeln("test22").
+connect_Lines([Tile1],[Tile2],[Tile3],Tile):-
+    connect_Tile(Tile1,Tile3,Tile,[],Tile2)
+   .
 connect_Line([Tile1|Line1], [Tile2, Tile222|Line2], [Tile3|Line3],Tile22):-
-     writeln("test2"),
+
 
     connect_Tile(Tile1,Tile3,Tile22,Tile222,Tile2),
 
 
     append([Tile222],Line2,Line_2),
-    writeln(Line_2).
 
-   % connect_Line(Line1,Line_2,Line3,Tile2).
+    (Line2 == [] ->
+    connect_Lines(Line1,Line_2,Line3,Tile2)
+    ;
+     connect_Line(Line1,Line_2,Line3,Tile2)
+    )
+    .
 
 connect_Tile(Tile_up,Tile_down,Tile_Left,Tile_right,Tile_Main):-
 
