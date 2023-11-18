@@ -47,18 +47,67 @@ unnamed_tile(Tile):-
 unifyLine(Line):-
     maplist(unifyTiles,Line).
 
-unifyTiles([_,true,_,_,_,[_,_,_,_,true,_,_,_,_,Link2],_,_,_,Link1]):-
-    %writeln("unifying left->right"),
-    Link1 = Link2.
-unifyTiles([_,_,true,_,_,_,_,[_,_,true,_,_,_,_,_,_,Link2],_,Link1]):-
+unifyTiles([_,true,_,_,true,[_,_,_,_,true,_,_,_,_,Link2],_,_,[_,true,_,_,_,_,_,_,_,Link3],Link1]):-
+    Link1 = Link2,
+    Link3 = Link1.
+
+unifyTiles([_,true,_,true,_,[_,_,_,_,true,_,_,_,_,Link2],_,[_,_,true,_,_,_,_,_,_,Link3],_,Link1]):-
+    Link1 = Link2,
+    Link3 = Link1.
+    
+unifyTiles([_,true,true,_,_,[_,_,_,_,true,_,_,_,_,Link2],,[_,_,_,true,_,_,_,_,_,Link3],_,_,Link1]):-
+    Link1 = Link2,
+    Link3 = Link1.
+
+unifyTiles([_,_,true,_,true,_,[_,_,_,true,_,_,_,_,_,Link2],_,[_,true,_,_,_,_,_,_,_,Link3],Link1]):-
+    Link1 = Link2,
+    Link3 = Link1.
+
+unifyTiles([_,_,_,true,true,_,_,[_,_,true,_,_,_,_,_,_,Link2],[_,true,_,_,_,_,_,_,_,Link3],Link1]):-
+    Link1 = Link2,
+    Link3 = Link1.
+
+unifyTiles([_,_,true,true,_,_,[_,_,_,true,_,_,_,_,_,Link2],[_,_,true,_,_,_,_,_,_,Link3],_,Link1]):-
+    Link1 = Link2,
+    Link3 = Link1.
+
+
+%unifyTiles([_,_,true,_,_,_,_,[_,_,true,_,_,_,_,_,_,Link2],_,Link1]):-
     %writeln("unifying below->above"),
-    Link1 = Link2.
-unifyTiles([_,_,_,true,_,_,[_,_,_,true,_,_,_,_,_,Link2],_,_,Link1]):-
+    %Link1 = Link2.
+%unifyTiles([_,_,_,true,_,_,[_,_,_,true,_,_,_,_,_,Link2],_,_,Link1]):-
     %writeln("unifying above->below"),
-    Link1 = Link2.
-unifyTiles([_,_,_,_,true,_,_,_,[_,true,_,_,_,_,_,_,_,Link2],Link1]):-
+    %Link1 = Link2.
+%unifyTiles([_,_,_,_,true,_,_,_,[_,true,_,_,_,_,_,_,_,Link2],Link1]):-
     %writeln("unifying right->left"),
-    Link1 = Link2.
+    %Link1 = Link2.
+
+verifyUnification([_,true,_,_,true,[_,_,_,_,true,_,_,_,_,Link2],_,_,[_,true,_,_,_,_,_,_,_,Link3],Link1]):-
+    Link1 == Link2,
+    Link3 == Link1.
+
+verifyUnification([_,true,_,true,_,[_,_,_,_,true,_,_,_,_,Link2],_,[_,_,true,_,_,_,_,_,_,Link3],_,Link1]):-
+    Link1 == Link2,
+    Link3 == Link1.
+
+verifyUnification([_,true,true,_,_,[_,_,_,_,true,_,_,_,_,Link2],,[_,_,_,true,_,_,_,_,_,Link3],_,_,Link1]):-
+    Link1 == Link2,
+    Link3 == Link1.
+
+verifyUnification([_,_,true,_,true,_,[_,_,_,true,_,_,_,_,_,Link2],_,[_,true,_,_,_,_,_,_,_,Link3],Link1]):-
+    Link1 == Link2,
+    Link3 == Link1.
+
+verifyUnification([_,_,_,true,true,_,_,[_,_,true,_,_,_,_,_,_,Link2],[_,true,_,_,_,_,_,_,_,Link3],Link1]):-
+    Link1 == Link2,
+    Link3 == Link1.
+
+verifyUnification([_,_,true,true,_,_,[_,_,_,true,_,_,_,_,_,Link2],[_,_,true,_,_,_,_,_,_,Link3],_,Link1]):-
+    Link1 == Link2,
+    Link3 == Link1.
+
+verifyUnification(["e",false,false,false,false|_]).
+
 unifyTiles([_,false,false,false,false|_]).
 borders(Puzzle):-
     last(Puzzle,Last_line),
