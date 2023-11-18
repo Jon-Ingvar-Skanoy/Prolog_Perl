@@ -16,12 +16,17 @@ read_File(Infile):-
 
 solve_Puzzle(Puzzle,Solution):-
     maplist(unnamed_line,Puzzle),
+
     borders(Puzzle),
+
     maplist(color,Puzzle),
+    write(3),
     %write_Puzzle(Puzzle),
     maplist(valid_Line,Puzzle),
-   % write(2),
-    maplist(unifyLine,Puzzle).
+    writePuzzleDone(Puzzle),
+    maplist(unifyLine,Puzzle),
+    writePuzzleDone(Puzzle),
+    preventCircles(Puzzle).
 
 color(Line):-
     maplist(cornerByWhite,Line),
@@ -55,7 +60,7 @@ unifyTiles([_,true,_,true,_,[_,_,_,_,true,_,_,_,_,Link2],_,[_,_,true,_,_,_,_,_,_
     Link1 = Link2,
     Link3 = Link1.
     
-unifyTiles([_,true,true,_,_,[_,_,_,_,true,_,_,_,_,Link2],,[_,_,_,true,_,_,_,_,_,Link3],_,_,Link1]):-
+unifyTiles([_,true,true,_,_,[_,_,_,_,true,_,_,_,_,Link2],[_,_,_,true,_,_,_,_,_,Link3],_,_,Link1]):-
     Link1 = Link2,
     Link3 = Link1.
 
@@ -90,7 +95,7 @@ verifyUnification([_,true,_,true,_,[_,_,_,_,true,_,_,_,_,Link2],_,[_,_,true,_,_,
     Link1 == Link2,
     Link3 == Link1.
 
-verifyUnification([_,true,true,_,_,[_,_,_,_,true,_,_,_,_,Link2],,[_,_,_,true,_,_,_,_,_,Link3],_,_,Link1]):-
+verifyUnification([_,true,true,_,_,[_,_,_,_,true,_,_,_,_,Link2],[_,_,_,true,_,_,_,_,_,Link3],_,_,Link1]):-
     Link1 == Link2,
     Link3 == Link1.
 
@@ -334,31 +339,50 @@ connect_Line([Tile1|Line1], [Tile2, Tile222|Line2], [Tile3|Line3],Tile22):-
     )
     .
 
-getFirstLink([[Tile|RestOfLine]|RestOfPuzzle]):-
+getFirstLink([[Tile|RestOfLine]|RestOfPuzzle],FirstLink):-
     (Tile \= ["e",false,false,false,false|_]->
-    Tile
+    Tile = [Type1,Left1,Down1,Up1,Right1, Tile_Left,Tile_Down,Tile_Up,Tile_Right, FirstLink]
     ;
     getFirstLink([[RestOfLine]|RestOfPuzzle])).
 
 getFirstLink([[]|RestOfPuzzle]):-
     getFirstLink(RestOfPuzzle).
 
+test(Tile,FirstLink):-
 
-preventCircles(Puzzle):-
-    firstLink = getFirstLink(Puzzle)
-    foreach(member(Line,Puzzle),foreach(member(Tile,Line),(Tile \= ["e",false,false,false,false|_]->
+(Tile \= ["e",false,false,false,false|_]->
     Tile = [Type1,Left1,Down1,Up1,Right1, Tile_Left,Tile_Down,Tile_Up,Tile_Right, Link],
-    Link == firstLink
+
+    Link == FirstLink
+
     ;
+
     true
-    ))).
+    )
+
+    .
+preventCircles(Puzzle):-
+    getFirstLink(Puzzle, FirstLink),
+    writeln(FirstLink),
+    foreach(member(Line,Puzzle),foreach(member(Tile,Line),test(Tile,FirstLink)
+    )).
 
 connect_Tile(Tile_up,Tile_down,Tile_Left,Tile_right,Tile_Main):-
 
     Tile_Main = [_,_,_,_,_,Tile_Left,Tile_down,Tile_up,Tile_right,_].
 
+
+
+
 circle_Tile([Tile|Line], Tile2):-
+ (eTile(Tile) ->
+ circle_Tile(Line,Tile2)
+ ;
  Tile = [_,_,_,_,_,_,_,_,_,Link3] ,
- Tile2 = [_,_,_,_,_,_,_,_,_,Link2],
- Link3 == Link2,
- circle_Tile(Line,Tile) .
+  Tile2 = [_,_,_,_,_,_,_,_,_,Link2],
+  Link3 == Link2,
+  circle_Tile(Line,Tile)
+ ) .
+
+
+eTile(["e",false,false,false,false|_]).
