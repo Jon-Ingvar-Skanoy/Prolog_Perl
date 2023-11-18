@@ -3,7 +3,7 @@
 read_File(Infile):-
         open(Infile, read, Stream),
         read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
-        nth0(0,Puzzles_out,Puzzle_1),
+        nth1(2,Puzzles_out,Puzzle_1),
         Puzzle_1 = [Line1| Puzzle_rest],
         connect_Puzzle(Line0,Line1,Puzzle_rest),
 
@@ -15,22 +15,30 @@ read_File(Infile):-
 
 
 
-        solve_Puzzle(Puzzle_1, Solution),
 
-       writePuzzleDone(Puzzle_1)
+       solve_Puzzle(Puzzle_1, Solution),
+
 
         %close(Stream)
-
+        write_Puzzle(Puzzle_1),
+          writePuzzleDone(Puzzle_1)
         .
 
 solve_Puzzle(Puzzle,Solution):-
     maplist(unnamed_line,Puzzle),
     borders(Puzzle),
-
+    maplist(color,Puzzle),
+    %write_Puzzle(Puzzle),
     maplist(valid_Line,Puzzle).
 
+
+color(Line):-
+    maplist(cornerByWhite,Line),
+    maplist(noStraightLinesToBlack,Line).
+
+
 unnamed_line(Line):-
-    writeln("d"),
+
     maplist(unnamed_tile,Line).
 
 unnamed_tile(Tile):-
@@ -43,7 +51,8 @@ unnamed_tile(Tile):-
     ;
 
     Tile_Down = [Type2,Left2,Down2,Up2,Right2, Tile_Left2,Tile_Down2,Tile_Up2,Tile_Right2, _],
-    Up1 = Down2
+    Down1 = Up2
+
     ),
     (  Tile_Right == [] ->
 
@@ -52,9 +61,10 @@ unnamed_tile(Tile):-
 
         Tile_Right = [Type3,Left3,Down3,Up3,Right3, Tile_Left3,Tile_Down3,Tile_Up3,Tile_Right3, _],
         Right1 = Left3
-        )
+        ).
 
-    .
+
+
 
 
 
@@ -207,7 +217,7 @@ writeLineDone(Line):-
     maplist(writeTileDone,Line),
     writeln("").
 writeTileDone(["*"|_]):-
-    write("┼").
+    write("\u253C").
  writeTileDone(["o",true,false,false,true|_]):-
     write("╨").
  writeTileDone(["o",false,true,true,false|_]):-
@@ -215,9 +225,9 @@ writeTileDone(["*"|_]):-
 writeTileDone(["e",true,true,false,false|_]):-
     write("┐").
 writeTileDone(["e",true,false,true,false|_]):-
-    write("┘").
+    write('\u2518').
 writeTileDone(["e",true,false,false,true|_]):-
-    write("─").
+    write('\u2500').
 writeTileDone(["e",false,true,true,false|_]):-
     write('│').
 writeTileDone(["e",false,true,false,true|_]):-
