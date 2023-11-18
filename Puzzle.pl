@@ -3,18 +3,9 @@
 read_File(Infile):-
         open(Infile, read, Stream),
         read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
-        nth1(2,Puzzles_out,Puzzle_1),
+        nth1(3,Puzzles_out,Puzzle_1),
         Puzzle_1 = [Line1| Puzzle_rest],
         connect_Puzzle(Line0,Line1,Puzzle_rest),
-
-
-
-       nth0(0,Puzzle_1,Line1),
-       nth0(0,Line1,Tile1),
-        get_elements_from_tile(Tile1,[Type1,Left1,Down1,Up1,Right1]),
-
-
-
 
        solve_Puzzle(Puzzle_1, Solution),
 
@@ -62,12 +53,8 @@ unnamed_tile(Tile):-
         Tile_Right = [Type3,Left3,Down3,Up3,Right3, Tile_Left3,Tile_Down3,Tile_Up3,Tile_Right3, _],
         Right1 = Left3
         ).
-
-
-
-
-
-
+unifyLine(Line):-
+    maplist(unifyTiles,Line).
 
 
 
