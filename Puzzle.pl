@@ -334,6 +334,25 @@ connect_Line([Tile1|Line1], [Tile2, Tile222|Line2], [Tile3|Line3],Tile22):-
     )
     .
 
+getFirstLink([[Tile|RestOfLine]|RestOfPuzzle]):-
+    (Tile \= ["e",false,false,false,false|_]->
+    Tile
+    ;
+    getFirstLink([[RestOfLine]|RestOfPuzzle])).
+
+getFirstLink([[]|RestOfPuzzle]):-
+    getFirstLink(RestOfPuzzle).
+
+
+preventCircles(Puzzle):-
+    firstLink = getFirstLink(Puzzle)
+    foreach(member(Line,Puzzle),foreach(member(Tile,Line),(Tile \= ["e",false,false,false,false|_]->
+    Tile = [Type1,Left1,Down1,Up1,Right1, Tile_Left,Tile_Down,Tile_Up,Tile_Right, Link],
+    Link == firstLink
+    ;
+    true
+    ))).
+
 connect_Tile(Tile_up,Tile_down,Tile_Left,Tile_right,Tile_Main):-
 
     Tile_Main = [_,_,_,_,_,Tile_Left,Tile_down,Tile_up,Tile_right,_].
