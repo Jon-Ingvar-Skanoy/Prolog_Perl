@@ -1,17 +1,18 @@
 
 
-read_File(Infile):-
+read_File(Infile, Outfile):-
         open(Infile, read, Stream),
         read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
         nth1(3,Puzzles_out,Puzzle_1),
-        Puzzle_1 = [Line1| Puzzle_rest],
-        connect_Puzzle(Line0,Line1,Puzzle_rest),
+        Puzzle_1 = [Line1 | Puzzle_rest],
+        connect_Puzzle(Line0, Line1, Puzzle_rest),
 
        solve_Puzzle(Puzzle_1, Solution),
 
-        %close(Stream)
-      %  write_Puzzle(Puzzle_1),
-          writePuzzleDone(Puzzle_1)
+        close(Stream),
+        open(Outfile, write, Stream_Out, [encoding(utf8)]),
+         writePuzzleDone(Puzzle_1,Stream_Out),
+         close(Stream_Out)
         .
 
 solve_Puzzle(Puzzle,Solution):-
@@ -19,17 +20,17 @@ solve_Puzzle(Puzzle,Solution):-
 
     borders(Puzzle),
 
-    maplist(color,Puzzle),
-    write(3),
-    %write_Puzzle(Puzzle),
+
+
+
     maplist(valid_Line,Puzzle),
-    writePuzzleDone(Puzzle),
+
     maplist(unifyLine,Puzzle),
-    writePuzzleDone(Puzzle),
+
     preventCircles(Puzzle).
 
 color(Line):-
-    maplist(cornerByWhite,Line),
+   % maplist(cornerByWhite,Line),
     maplist(noStraightLinesToBlack,Line).
 
 unnamed_line(Line):-
@@ -184,12 +185,23 @@ get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]):-
 valid_Line(Line):-
     maplist(validTile,Line).
 
-validTile(["*",true,true,false,false|_]).
-validTile(["*",true,false,true,false|_]).
-validTile(["*",false,false,true,true|_]).
-validTile(["*",false,true,false,true|_]).
-validTile(["o",false,true,true,false|_]).
-validTile(["o",true,false,false,true|_]).
+
+cornerByWhite(["o",false,true,true,false,_,[_,false,false,true,true|_]|_]).
+cornerByWhite(["o",false,true,true,false,_,[_,true,false,true,false|_]|_]).
+
+
+validTile(["*",true,true,false,false,[_,true,false,false,true|_],[_,false,true,true,false|_]|_]).
+validTile(["*",true,false,true,false,[_,true,false,false,true|_],_,[_,false,true,true,false|_]|_]).
+validTile(["*",false,true,false,true,_,[_,false,true,true,false|_],_,[_,true,false,false,true|_]|_]).
+validTile(["*",false,false,true,true,_,_,[_,false,true,true,false|_],[_,true,false,false,true|_]|_]).
+validTile(["o",true,false,false,true,[_,false,false,true,true|_]|_]).
+validTile(["o",true,false,false,true,[_,false,true,false,true|_]|_]).
+validTile(["o",true,false,false,true,_,_,_,[_,true,true,false,false|_]|_]).
+validTile(["o",true,false,false,true,_,_,_,[_,true,false,true,false|_]|_]).
+validTile(["o",false,true,true,false,_,_,[_,true,true,false,false|_]|_]).
+validTile(["o",false,true,true,false,_,_,[_,false,true,false,true|_]|_]).
+validTile(["o",false,true,true,false,_,[_,false,false,true,true|_]|_]).
+validTile(["o",false,true,true,false,_,[_,true,false,true,false|_]|_]).
 validTile(["e",true,true,false,false|_]).
 validTile(["e",true,false,true,false|_]).
 validTile(["e",false,true,true,false|_]).
@@ -243,31 +255,31 @@ write_tile(Tile):-
     write(Right),
     write(" ").
 
-writePuzzleDone(Puzzle):-
-    maplist(writeLineDone,Puzzle).
-writeLineDone(Line):-
-    maplist(writeTileDone,Line),
-    writeln("").
-writeTileDone(["*"|_]):-
-    write("\u253C").
- writeTileDone(["o",true,false,false,true|_]):-
-    write("\u2568").
- writeTileDone(["o",false,true,true,false|_]):-
-    write("\u2561").
-writeTileDone(["e",true,true,false,false|_]):-
-    write("\u2510").
-writeTileDone(["e",true,false,true,false|_]):-
-    write('\u2518').
-writeTileDone(["e",true,false,false,true|_]):-
-    write('\u2500').
-writeTileDone(["e",false,true,true,false|_]):-
-    write('\u2502').
-writeTileDone(["e",false,true,false,true|_]):-
-    write("\u250C").
-writeTileDone(["e",false,false,true,true|_]):-
-    write("\u2514").
-writeTileDone(["e",false,false,false,false|_]):-
-    write(" ").
+writePuzzleDone(Puzzle, Stream):-
+    maplist(writeLineDone(Stream),Puzzle).
+writeLineDone(Stream,Line):-
+    maplist(writeTileDone(Stream),Line),
+    write(Stream,"\n").
+writeTileDone(Stream,["*"|_]):-
+    write(Stream,"\u253C").
+ writeTileDone(Stream,["o",true,false,false,true|_]):-
+    write(Stream,"\u2568").
+ writeTileDone(Stream,["o",false,true,true,false|_]):-
+    write(Stream,"\u2561").
+writeTileDone(Stream,["e",true,true,false,false|_]):-
+    write(Stream,"\u2510").
+writeTileDone(Stream,["e",true,false,true,false|_]):-
+    write(Stream,'\u2518').
+writeTileDone(Stream,["e",true,false,false,true|_]):-
+    write(Stream,'\u2500').
+writeTileDone(Stream,["e",false,true,true,false|_]):-
+    write(Stream,'\u2502').
+writeTileDone(Stream,["e",false,true,false,true|_]):-
+    write(Stream,"\u250C").
+writeTileDone(Stream,["e",false,false,true,true|_]):-
+    write(Stream,"\u2514").
+writeTileDone(Stream,["e",false,false,false,false|_]):-
+    write(Stream," ").
 
 noStraightLinesToBlack(["*",true,true,false,false,[_,true,false,false,true|_],[_,false,true,true,false|_]|_]).
 noStraightLinesToBlack(["*",true,false,true,false,[_,true,false,false,true|_],_,[_,false,true,true,false|_]|_]).
