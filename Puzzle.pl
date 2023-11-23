@@ -3,11 +3,11 @@
 read_File(Infile, Outfile):-
         open(Infile, read, Stream),
         read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
-        nth1(3,Puzzles_out,Puzzle_1),
+        nth1(2,Puzzles_out,Puzzle_1),
         Puzzle_1 = [Line1 | Puzzle_rest],
-        connect_Puzzle(Line0, Line1, Puzzle_rest),
+        connect_Puzzle(_, Line1, Puzzle_rest),
 
-       solve_Puzzle(Puzzle_1, Solution),
+       solve_Puzzle(Puzzle_1),
 
         close(Stream),
         open(Outfile, write, Stream_Out, [encoding(utf8)]),
@@ -15,7 +15,7 @@ read_File(Infile, Outfile):-
          close(Stream_Out)
         .
 
-solve_Puzzle(Puzzle,Solution):-
+solve_Puzzle(Puzzle):-
     maplist(unnamed_line,Puzzle),
 
     borders(Puzzle),
@@ -30,24 +30,24 @@ solve_Puzzle(Puzzle,Solution):-
     preventCircles(Puzzle).
 
 color(Line):-
-   % maplist(cornerByWhite,Line),
+   maplist(cornerByWhite,Line),
     maplist(noStraightLinesToBlack,Line).
 
 unnamed_line(Line):-
     maplist(unnamed_tile,Line).
 
 unnamed_tile(Tile):-
-    Tile = [Type1,Left1,Down1,Up1,Right1, Tile_Left,Tile_Down,Tile_Up,Tile_Right, _],
+    Tile = [_,_,Down1,_,Right1, _,Tile_Down,_,Tile_Right, _],
     (  Tile_Down == [] ->
     true
     ;
-    Tile_Down = [Type2,Left2,Down2,Up2,Right2, Tile_Left2,Tile_Down2,Tile_Up2,Tile_Right2, _],
+    Tile_Down = [_,_,_,Up2,_, _,_,_,_, _],
     Down1 = Up2
     ),
     (  Tile_Right == [] ->
         true
         ;
-        Tile_Right = [Type3,Left3,Down3,Up3,Right3, Tile_Left3,Tile_Down3,Tile_Up3,Tile_Right3, _],
+        Tile_Right = [_,Left3,_,_,_, _,_,_,_, _],
         Right1 = Left3
         ).
 unifyLine(Line):-
@@ -60,7 +60,7 @@ unifyTiles([_,true,_,_,true,[_,_,_,_,true,_,_,_,_,Link2],_,_,[_,true,_,_,_,_,_,_
 unifyTiles([_,true,_,true,_,[_,_,_,_,true,_,_,_,_,Link2],_,[_,_,true,_,_,_,_,_,_,Link3],_,Link1]):-
     Link1 = Link2,
     Link3 = Link1.
-    
+
 unifyTiles([_,true,true,_,_,[_,_,_,_,true,_,_,_,_,Link2],[_,_,_,true,_,_,_,_,_,Link3],_,_,Link1]):-
     Link1 = Link2,
     Link3 = Link1.
@@ -76,7 +76,7 @@ unifyTiles([_,_,_,true,true,_,_,[_,_,true,_,_,_,_,_,_,Link2],[_,true,_,_,_,_,_,_
 unifyTiles([_,_,true,true,_,_,[_,_,_,true,_,_,_,_,_,Link2],[_,_,true,_,_,_,_,_,_,Link3],_,Link1]):-
     Link1 = Link2,
     Link3 = Link1.
-
+unifyTiles([_,false,false,false,false|_]).
 
 %unifyTiles([_,_,true,_,_,_,_,[_,_,true,_,_,_,_,_,_,Link2],_,Link1]):-
     %writeln("unifying below->above"),
@@ -114,7 +114,7 @@ verifyUnification([_,_,true,true,_,_,[_,_,_,true,_,_,_,_,_,Link2],[_,_,true,_,_,
 
 verifyUnification(["e",false,false,false,false|_]).
 
-unifyTiles([_,false,false,false,false|_]).
+
 borders(Puzzle):-
     last(Puzzle,Last_line),
 
@@ -186,8 +186,6 @@ valid_Line(Line):-
     maplist(validTile,Line).
 
 
-cornerByWhite(["o",false,true,true,false,_,[_,false,false,true,true|_]|_]).
-cornerByWhite(["o",false,true,true,false,_,[_,true,false,true,false|_]|_]).
 
 
 validTile(["*",true,true,false,false,[_,true,false,false,true|_],[_,false,true,true,false|_]|_]).
@@ -210,7 +208,6 @@ validTile(["e",false,true,false,true|_]).
 validTile(["e",false,false,true,true|_]).
 validTile(["e",false,false,false,false|_]).
 
-validTile(["Ø",false,false,false,false|Rest]).
 
 process_subList_border([]).
 process_subList_border([Sublist|Sublists]):-
@@ -223,17 +220,17 @@ process_subList_border([Sublist|Sublists]):-
     process_subList_border(Sublists).
 
 illegal_Down(Tile):-
-    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
+    get_elements_from_tile(Tile,[_,_,Down,_,_]),
     Down = false.
 
 illegal_Up(Tile):-
-    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
+    get_elements_from_tile(Tile,[_,_,_,Up,_]),
     Up = false.
 illegal_Right(Tile):-
-    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
+    get_elements_from_tile(Tile,[_, _, _, _,Right]),
     Right = false.
 illegal_Left(Tile):-
-    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
+    get_elements_from_tile(Tile,[_, Left, _, _, _]),
     Left = false.
 write_Puzzle(Puzzle):-
 
@@ -302,7 +299,7 @@ cornerByWhite(["e"|_]).
 
 connect_Puzzles(Line1,Line2,[]):-
 
-    connect_Line(Line1,Line2,Line3,[]).
+    connect_Line(Line1,Line2,_,[]).
 
 connect_Puzzle(Line1,Line2,[Line3|Puzzle_rest]):-
 
@@ -353,7 +350,7 @@ connect_Line([Tile1|Line1], [Tile2, Tile222|Line2], [Tile3|Line3],Tile22):-
 
 getFirstLink([[Tile|RestOfLine]|RestOfPuzzle],FirstLink):-
     (Tile \= ["e",false,false,false,false|_]->
-    Tile = [Type1,Left1,Down1,Up1,Right1, Tile_Left,Tile_Down,Tile_Up,Tile_Right, FirstLink]
+    Tile = [_, _, _, _, _, _, _, _, _, FirstLink]
     ;
     getFirstLink([[RestOfLine]|RestOfPuzzle])).
 
@@ -363,7 +360,7 @@ getFirstLink([[]|RestOfPuzzle]):-
 test(Tile,FirstLink):-
 
 (Tile \= ["e",false,false,false,false|_]->
-    Tile = [Type1,Left1,Down1,Up1,Right1, Tile_Left,Tile_Down,Tile_Up,Tile_Right, Link],
+    Tile = [_,_,_,_,_, _,_,_,_, Link],
 
     Link == FirstLink
 
