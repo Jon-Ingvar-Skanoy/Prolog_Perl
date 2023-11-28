@@ -2,8 +2,7 @@
 run:-
     writeln("test"),
     current_prolog_flag(argv, [_,Infile,Outfile|_]),
-    writeln(Infile),
-    writeln(Outfile),
+
     read_File(Infile, Outfile).
 
 
@@ -11,6 +10,8 @@ run:-
 read_File(Infile, Outfile):-
         open(Infile, read, Stream),
         read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
+       writeln(Infile),
+       writeln(Outfile),
        maplist(connect_Puzzles,Puzzles_out),
        maplist(solve_Puzzle, Puzzles_out),
 
@@ -140,6 +141,7 @@ borders(Puzzle):-
 
 read_lines_find_size(Stream,not_in_list,Puzzles_in, Puzzles_out):-
     read_line_to_string(Stream,Line),
+   % writeln(Line),
     (Line == end_of_file ->
 
     Puzzles_out = Puzzles_in
