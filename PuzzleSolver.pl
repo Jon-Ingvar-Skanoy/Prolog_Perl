@@ -17,9 +17,11 @@ read_File(Infile, Outfile):-
 
         close(Stream),
         open(Outfile, write, Stream_Out, [encoding(utf8)]),
+         write(Stream_Out,'puzzles 1'),
+         write(Stream_Out,"\n"),
          writePuzzleDone(Puzzle_1,Stream_Out),
          close(Stream_Out)
-        .
+      .
 
 solve_Puzzle(Puzzle):-
     maplist(unnamed_line,Puzzle),
@@ -191,7 +193,28 @@ get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]):-
 valid_Line(Line):-
     maplist(validTile,Line).
 
-
+%validTiles(Tile):-
+ %   member(Tile, [["*",true,true,false,false,[_,true,false,false,true|_],[_,false,true,true,false|_]|_],
+  %  ["*",true,false,true,false,[_,true,false,false,true|_],_,[_,false,true,true,false|_]|_],
+   % ["*",false,true,false,true,_,[_,false,true,true,false|_],_,[_,true,false,false,true|_]|_],
+    %["*",false,false,true,true,_,_,[_,false,true,true,false|_],[_,true,false,false,true|_]|_],
+    %["o",true,false,false,true,[_,false,false,true,true|_]|_],
+    %["o",true,false,false,true,[_,false,true,false,true|_]|_],
+    %["o",true,false,false,true,_,_,_,[_,true,true,false,false|_]|_],
+    %["o",true,false,false,true,_,_,_,[_,true,false,true,false|_]|_],
+    %["o",false,true,true,false,_,_,[_,true,true,false,false|_]|_],
+    %["o",false,true,true,false,_,_,[_,false,true,false,true|_]|_],
+    %["o",false,true,true,false,_,_,[_,false,true,false,true|_]|_],
+    %["o",false,true,true,false,_,[_,true,false,true,false|_]|_],
+    %["e",true,true,false,false|_],
+    %["e",true,false,true,false|_],
+    %["e",false,true,true,false|_],
+    %["e",true,false,false,true|_],
+    %["e",false,true,false,true|_],
+    %["e",false,true,false,true|_],
+    %["e",false,false,false,false|_]
+    %]),
+    %write_tile(Tile).
 
 
 validTile(["*",true,true,false,false,[_,true,false,false,true|_],[_,false,true,true,false|_]|_]).
@@ -259,6 +282,14 @@ write_tile(Tile):-
     write(" ").
 
 writePuzzleDone(Puzzle, Stream):-
+    write(Stream,"size "),
+    length(Puzzle,Height),
+    nth1(1,Puzzle, Line),
+    length(Line,Width),
+    write(Stream,Width),
+    write(Stream,'x'),
+    write(Stream,Height),
+    write(Stream,"\n"),
     maplist(writeLineDone(Stream),Puzzle).
 writeLineDone(Stream,Line):-
     maplist(writeTileDone(Stream),Line),
@@ -378,7 +409,7 @@ test(Tile,FirstLink):-
     .
 preventCircles(Puzzle):-
     getFirstLink(Puzzle, FirstLink),
-    writeln(FirstLink),
+  %  writeln(FirstLink),
     foreach(member(Line,Puzzle),foreach(member(Tile,Line),test(Tile,FirstLink)
     )).
 
@@ -402,4 +433,4 @@ circle_Tile([Tile|Line], Tile2):-
 
 eTile(["e",false,false,false,false|_]).
 :- run.
-:- halt.
+%:- halt.
