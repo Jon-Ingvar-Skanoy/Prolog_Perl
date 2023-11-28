@@ -1,4 +1,7 @@
 
+run:-
+    current_prolog_flag(argv, [Infile,Outfile]),
+    read_File(Infile, Outfile).
 
 read_File(Infile, Outfile):-
         open(Infile, read, Stream),
@@ -395,3 +398,5 @@ circle_Tile([Tile|Line], Tile2):-
 
 
 eTile(["e",false,false,false,false|_]).
+:- run.
+:- halt.
