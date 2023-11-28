@@ -1,12 +1,15 @@
-
+:- use_module(library(clpfd)).
 run:-
-    current_prolog_flag(argv, [Infile,Outfile]),
+    writeln("test"),
+    current_prolog_flag(argv, [_,Infile,Outfile|_]),
+    writeln(Infile),
+    writeln(Outfile),
     read_File(Infile, Outfile).
 
 read_File(Infile, Outfile):-
         open(Infile, read, Stream),
         read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
-        nth1(2,Puzzles_out,Puzzle_1),
+        nth1(1,Puzzles_out,Puzzle_1),
         Puzzle_1 = [Line1 | Puzzle_rest],
         connect_Puzzle(_, Line1, Puzzle_rest),
 
