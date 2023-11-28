@@ -1,4 +1,4 @@
-:- use_module(library(clpfd)).
+%:- use_module(library(clpfd)).
 run:-
     writeln("test"),
     current_prolog_flag(argv, [_,Infile,Outfile|_]),
@@ -6,36 +6,43 @@ run:-
     writeln(Outfile),
     read_File(Infile, Outfile).
 
+
+
 read_File(Infile, Outfile):-
         open(Infile, read, Stream),
         read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
-        nth1(1,Puzzles_out,Puzzle_1),
-        Puzzle_1 = [Line1 | Puzzle_rest],
-        connect_Puzzle(_, Line1, Puzzle_rest),
-
-       solve_Puzzle(Puzzle_1),
+       maplist(connect_Puzzles,Puzzles_out),
+       maplist(solve_Puzzle, Puzzles_out),
 
         close(Stream),
         open(Outfile, write, Stream_Out, [encoding(utf8)]),
-         write(Stream_Out,'puzzles 1'),
+         write(Stream_Out,'puzzles '),
+         length(Puzzles_out,NrPuzzles),
+         write(Stream_Out,NrPuzzles),
          write(Stream_Out,"\n"),
-         writePuzzleDone(Puzzle_1,Stream_Out),
+         maplist(write_Puzzles(Stream_Out),Puzzles_out),
          close(Stream_Out)
       .
+connect_Puzzles(Puzzle):-
+    Puzzle = [Line1 | Puzzle_rest],
+   connect_Puzzle(_, Line1, Puzzle_rest).
+
 
 solve_Puzzle(Puzzle):-
     maplist(unnamed_line,Puzzle),
 
     borders(Puzzle),
-
+    maplist(color,Puzzle),
 
 
 
     maplist(valid_Line,Puzzle),
 
-    maplist(unifyLine,Puzzle),
+    %maplist(unifyLine,Puzzle),
 
     preventCircles(Puzzle).
+write_Puzzles(Stream,Puzzle):-
+    writePuzzleDone(Puzzle,Stream).
 
 color(Line):-
    maplist(cornerByWhite,Line),
@@ -43,7 +50,7 @@ color(Line):-
 
 unnamed_line(Line):-
     maplist(unnamed_tile,Line).
-
+% [_ | Tile_Left,Tile_down,Tile_up,Tile_right, Link]
 unnamed_tile(Tile):-
     Tile = [_,_,Down1,_,Right1, _,Tile_Down,_,Tile_Right, _],
     (  Tile_Down == [] ->
@@ -217,24 +224,38 @@ valid_Line(Line):-
     %write_tile(Tile).
 
 
-validTile(["*",true,true,false,false,[_,true,false,false,true|_],[_,false,true,true,false|_]|_]).
-validTile(["*",true,false,true,false,[_,true,false,false,true|_],_,[_,false,true,true,false|_]|_]).
-validTile(["*",false,true,false,true,_,[_,false,true,true,false|_],_,[_,true,false,false,true|_]|_]).
-validTile(["*",false,false,true,true,_,_,[_,false,true,true,false|_],[_,true,false,false,true|_]|_]).
-validTile(["o",true,false,false,true,[_,false,false,true,true|_]|_]).
-validTile(["o",true,false,false,true,[_,false,true,false,true|_]|_]).
-validTile(["o",true,false,false,true,_,_,_,[_,true,true,false,false|_]|_]).
-validTile(["o",true,false,false,true,_,_,_,[_,true,false,true,false|_]|_]).
-validTile(["o",false,true,true,false,_,_,[_,true,true,false,false|_]|_]).
-validTile(["o",false,true,true,false,_,_,[_,false,true,false,true|_]|_]).
-validTile(["o",false,true,true,false,_,[_,false,false,true,true|_]|_]).
-validTile(["o",false,true,true,false,_,[_,true,false,true,false|_]|_]).
-validTile(["e",true,true,false,false|_]).
-validTile(["e",true,false,true,false|_]).
-validTile(["e",false,true,true,false|_]).
-validTile(["e",true,false,false,true|_]).
-validTile(["e",false,true,false,true|_]).
-validTile(["e",false,false,true,true|_]).
+validTile(["*"|_]).
+validTile(["o"|_]).
+validTile(["e",true,true,false,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+    get_link(Tile_Left,Left_Link),
+    get_link(Tile_Right,Right_Link),
+    Link = Left_Link,
+    Link = Right_Link.
+validTile(["e",true,false,true,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+    get_link(Tile_Left,Link2),
+    get_link(Tile_up,Link3),
+    Link = Link2,
+    Link = Link3.
+validTile(["e",false,true,true,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+    get_link(Tile_down,Link2),
+    get_link(Tile_up,Link3),
+    Link = Link2,
+    Link = Link3.
+validTile(["e",true,false,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+     get_link(Tile_Left,Link2),
+     get_link(Tile_right,Link3),
+     Link = Link2,
+     Link = Link3.
+validTile(["e",false,true,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+     get_link(Tile_down,Link2),
+     get_link(Tile_right,Link3),
+     Link = Link2,
+     Link = Link3.
+validTile(["e",false,false,true,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+     get_link(Tile_up,Link2),
+     get_link(Tile_right,Link3),
+     Link = Link2,
+     Link = Link3.
 validTile(["e",false,false,false,false|_]).
 
 
@@ -314,23 +335,72 @@ writeTileDone(Stream,["e",false,false,true,true|_]):-
     write(Stream,"\u2514").
 writeTileDone(Stream,["e",false,false,false,false|_]):-
     write(Stream," ").
-
-noStraightLinesToBlack(["*",true,true,false,false,[_,true,false,false,true|_],[_,false,true,true,false|_]|_]).
-noStraightLinesToBlack(["*",true,false,true,false,[_,true,false,false,true|_],_,[_,false,true,true,false|_]|_]).
-noStraightLinesToBlack(["*",false,true,false,true,_,[_,false,true,true,false|_],_,[_,true,false,false,true|_]|_]).
-noStraightLinesToBlack(["*",false,false,true,true,_,_,[_,false,true,true,false|_],[_,true,false,false,true|_]|_]).
+% ["e",true,false,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]
+% ["*",true,true,false,false,[_,true,false,false,true|Left_Rest],[_,false,true,true,false|Down_rest],_,_,Link]
+noStraightLinesToBlack(["*",true,true,false,false,[_,true,false,false,true|Left_Rest],[_,false,true,true,false|Down_rest],_,_,Link]):-
+    last(Left_Rest,Left_Link),
+    last(Down_rest,Down_Link),
+    Link = Left_Link,
+    Link= Down_Link.
+noStraightLinesToBlack(["*",true,false,true,false,[_,true,false,false,true|Rest1],_,[_,false,true,true,false|Rest2],_,Link]):-
+        last(Rest1,Left_Link),
+        last(Rest2,Down_Link),
+        Link = Left_Link,
+        Link= Down_Link.
+noStraightLinesToBlack(["*",false,true,false,true,_,[_,false,true,true,false|Rest1],_,[_,true,false,false,true|Rest2],Link]):-
+            last(Rest1,Left_Link),
+            last(Rest2,Down_Link),
+            Link = Left_Link,
+            Link= Down_Link.
+noStraightLinesToBlack(["*",false,false,true,true,_,_,[_,false,true,true,false|Rest1],[_,true,false,false,true|Rest2],Link]):-
+            last(Rest1,Left_Link),
+            last(Rest2,Down_Link),
+            Link = Left_Link,
+            Link= Down_Link.
 noStraightLinesToBlack(["o"|_]).
 noStraightLinesToBlack(["e"|_]).
 
-
-cornerByWhite(["o",true,false,false,true,[_,false,false,true,true|_]|_]).
-cornerByWhite(["o",true,false,false,true,[_,false,true,false,true|_]|_]).
-cornerByWhite(["o",true,false,false,true,_,_,_,[_,true,true,false,false|_]|_]).
-cornerByWhite(["o",true,false,false,true,_,_,_,[_,true,false,true,false|_]|_]).
-cornerByWhite(["o",false,true,true,false,_,_,[_,true,true,false,false|_]|_]).
-cornerByWhite(["o",false,true,true,false,_,_,[_,false,true,false,true|_]|_]).
-cornerByWhite(["o",false,true,true,false,_,[_,false,false,true,true|_]|_]).
-cornerByWhite(["o",false,true,true,false,_,[_,true,false,true,false|_]|_]).
+% ["e",true,false,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]
+cornerByWhite(["o",true,false,false,true,[_,false,false,true,true|Rest1],_,_,Tile_Right,Link]):-
+            last(Rest1,Left_Link),
+            last(Tile_Right,Down_Link),
+            Link = Left_Link,
+            Link = Down_Link.
+cornerByWhite(["o",true,false,false,true,[_,false,true,false,true|Rest1],_,_,Tile_Right,Link]):-
+            last(Rest1,Left_Link),
+            last(Tile_Right,Down_Link),
+            Link = Left_Link,
+            Link = Down_Link.
+cornerByWhite(["o",true,false,false,true,Tile_Left,_,_,[_,true,true,false,false|Rest1],Link]):-
+    last(Rest1,Left_Link),
+    last(Tile_Left,Down_Link),
+    Link = Left_Link,
+    Link = Down_Link.
+cornerByWhite(["o",true,false,false,true,Tile_Left,_,_,[_,true,false,true,false|Rest1],Link]):-
+    last(Rest1,Left_Link),
+    last(Tile_Left,Down_Link),
+    Link = Left_Link,
+    Link = Down_Link.
+cornerByWhite(["o",false,true,true,false,_,Tile_Down,[_,true,true,false,false|Rest1], _,Link]):-
+    last(Rest1,Left_Link),
+    last(Tile_Down,Down_Link),
+    Link = Left_Link,
+    Link = Down_Link.
+cornerByWhite(["o",false,true,true,false,_,Tile_Down,[_,false,true,false,true|Rest1], _, Link]):-
+    last(Rest1,Left_Link),
+    last(Tile_Down,Down_Link),
+    Link = Left_Link,
+    Link = Down_Link.
+cornerByWhite(["o",false,true,true,false,_,[_,false,false,true,true|Rest1],Tile_up,_, Link]):-
+    last(Rest1,Left_Link),
+    last(Tile_up,Down_Link),
+    Link = Left_Link,
+    Link = Down_Link.
+cornerByWhite(["o",false,true,true,false,_,[_,true,false,true,false|Rest1],Tile_up,_, Link]):-
+    last(Rest1,Left_Link),
+    last(Tile_up,Down_Link),
+    Link = Left_Link,
+    Link = Down_Link.
 cornerByWhite(["*"|_]).
 cornerByWhite(["e"|_]).
 
@@ -417,7 +487,8 @@ connect_Tile(Tile_up,Tile_down,Tile_Left,Tile_right,Tile_Main):-
 
     Tile_Main = [_,_,_,_,_,Tile_Left,Tile_down,Tile_up,Tile_right,_].
 
-
+get_link(Tile,Link):-
+    Tile = [_, _, _, _, _, _, _, _, _, Link].
 
 
 circle_Tile([Tile|Line], Tile2):-
