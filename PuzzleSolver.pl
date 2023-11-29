@@ -532,8 +532,25 @@ threeWhite(["o",_,_,_,_,["o"|_],_,_,["*"|_]|_]).
 threeWhite(["e"|_]).
 threeWhite(["*"|_]).
 
+%adjacentBlack(["*",false,true,false,true,["*",true,_,_,false|_],_,["*",_,false,true,_|_]|_]).
+%adjacentBlack(["*",true,true,false,false,_,_,["*",_,false,true,_|_],["*",false,_,_,true|_]|_]).
+%adjacentBlack(["*",true,false,true,false,_,["*",_,true,false,_|_],_,["*",false,_,_,true|_]|_]).
+%adjacentBlack(["*",false,false,true,true,["*",true,_,_,false|_],["*",_,true,false,_|_],|_]).
+
+adjacentHorizontalBlack(["*",true,_,_,false,_,_,_,["*",false,_,_,true|_]|_]).
+adjacentHorizontalBlack(["*",_,_,_,_,_,_,_,["e"|_]]|_).
+adjacentHorizontalBlack(["*",_,_,_,_,_,_,_,["o"|_]]|_).
+adjacentHorizontalBlack(["*",_,_,_,_,_,_,_,[]|_]).
+
+adjacentHorizontalBlack(["e"|_]).
+adjacentHorizontalBlack(["o"|_]).
+
+adjacentVerticalBlack(["*",_,false,true,_]).
+
+
 threeWhiteLine(Line):-
-    maplist(threeWhite,Line).
+    maplist(threeWhite,Line),
+    maplist(adjacentHorizontalBlack,Line).
 
 threeWhitePuzzle(Puzzle):-
     maplist(threeWhiteLine,Puzzle).
