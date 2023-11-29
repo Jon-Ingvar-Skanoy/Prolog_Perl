@@ -233,9 +233,9 @@ validTile(["*"|_]).
 validTile(["o"|_]).
 validTile(["e",true,true,false,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
     get_link(Tile_Left,Left_Link),
-    get_link(Tile_Right,Right_Link),
+    get_link(Tile_down,Down_Link),
     Link = Left_Link,
-    Link = Right_Link.
+    Link = Down_Link.
 validTile(["e",true,false,true,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
     get_link(Tile_Left,Link2),
     get_link(Tile_up,Link3),
