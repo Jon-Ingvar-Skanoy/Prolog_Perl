@@ -603,15 +603,15 @@ blackOneFromRightBorder(["*",true,_,_,false|_]).
 blackOneFromRightBorder(["o"|_]).
 blackOneFromRightBorder(["e"|_]).
 
-blackOneFromLeftBorder(["*",false,_,_,true]).
+blackOneFromLeftBorder(["*",false,_,_,true|_]).
 blackOneFromLeftBorder(["o"|_]).
 blackOneFromLeftBorder(["e"|_]).
 
-blackOneFromUpBorder(["*",_,true,false,_]).
+blackOneFromUpBorder(["*",_,true,false,_|_]).
 blackOneFromUpBorder(["o"|_]).
 blackOneFromUpBorder(["e"|_]).
 
-blackOneFromDownBorder(["*",_,false,true,_]).
+blackOneFromDownBorder(["*",_,false,true,_|_]).
 blackOneFromDownBorder(["o"|_]).
 blackOneFromDownBorder(["e"|_]).
 
