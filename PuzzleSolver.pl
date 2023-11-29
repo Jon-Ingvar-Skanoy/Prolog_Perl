@@ -40,7 +40,7 @@ solve_Puzzle(Puzzle):-
 
     maplist(valid_Line,Puzzle),
 
-    %maplist(unifyLine,Puzzle),
+    maplist(unifyLine,Puzzle),
 
     preventCircles(Puzzle).
 write_Puzzles(Stream,Puzzle):-
@@ -386,6 +386,7 @@ cornerByWhite(["o",true,false,false,true,Tile_Left,_,_,[_,true,false,true,false|
     last(Tile_Left,Down_Link),
     Link = Left_Link,
     Link = Down_Link.
+
 cornerByWhite(["o",false,true,true,false,_,Tile_Down,[_,true,true,false,false|Rest1], _,Link]):-
     last(Rest1,Left_Link),
     last(Tile_Down,Down_Link),
@@ -464,7 +465,7 @@ getFirstLink([[Tile|RestOfLine]|RestOfPuzzle],FirstLink):-
     (Tile \= ["e",false,false,false,false|_]->
     Tile = [_, _, _, _, _, _, _, _, _, FirstLink]
     ;
-    getFirstLink([[RestOfLine]|RestOfPuzzle])).
+    getFirstLink([RestOfLine|RestOfPuzzle],FirstLink)).
 
 getFirstLink([[]|RestOfPuzzle]):-
     getFirstLink(RestOfPuzzle).
@@ -483,8 +484,9 @@ test(Tile,FirstLink):-
 
     .
 preventCircles(Puzzle):-
+    writeln(22),
     getFirstLink(Puzzle, FirstLink),
-  %  writeln(FirstLink),
+    writeln(FirstLink),
     foreach(member(Line,Puzzle),foreach(member(Tile,Line),test(Tile,FirstLink)
     )).
 
