@@ -33,6 +33,7 @@ solve_Puzzle(Puzzle):-
     maplist(unnamed_line,Puzzle),
 
     borders(Puzzle),
+    threeWhitePuzzle(Puzzle),
     maplist(color,Puzzle),
 
 
@@ -47,7 +48,6 @@ write_Puzzles(Stream,Puzzle):-
 
 color(Line):-
    maplist(cornerByWhite,Line),
-   maplist(threeWhite,Line),
     maplist(noStraightLinesToBlack,Line).
 
 unnamed_line(Line):-
@@ -499,46 +499,33 @@ get_link(Tile,Link):-
 threeWhite(["o",false,true,true,false,["o",false,true,true,false|_],_,_,["o",false,true,true,false|_]|_]).
 threeWhite(["o",true,false,false,true,_,["o",true,false,false,true|_],["o",true,false,false,true|_]|_]).
 
-threeWhite(["o",true,false,false,true,_,["e"|_],["o"|_]|_]).
-threeWhite(["o",true,false,false,true,_,["e"|_],["*"|_]|_]).
-threeWhite(["o",true,false,false,true,_,["e"|_],["e"|_]|_]).
-threeWhite(["o",true,false,false,true,_,["*"|_],["o"|_]|_]).
-threeWhite(["o",true,false,false,true,_,["*"|_],["e"|_]|_]).
-threeWhite(["o",true,false,false,true,_,["*"|_],["*"|_]|_]).
-threeWhite(["o",true,false,false,true,_,["o"|_],["e"|_]|_]).
-threeWhite(["o",true,false,false,true,_,["o"|_],["*"|_]|_]).
+threeWhite(["o",_,_,_,_,_,["e"|_],["o"|_]|_]).
+threeWhite(["o",_,_,_,_,_,["e"|_],["*"|_]|_]).
+threeWhite(["o",_,_,_,_,_,["e"|_],["e"|_]|_]).
+threeWhite(["o",_,_,_,_,_,["*"|_],["o"|_]|_]).
+threeWhite(["o",_,_,_,_,_,["*"|_],["e"|_]|_]).
+threeWhite(["o",_,_,_,_,_,["*"|_],["*"|_]|_]).
+threeWhite(["o",_,_,_,_,_,["o"|_],["e"|_]|_]).
+threeWhite(["o",_,_,_,_,_,["o"|_],["*"|_]|_]).
 
-threeWhite(["o",false,true,true,false,_,["e"|_],["o"|_]|_]).
-threeWhite(["o",false,true,true,false,_,["e"|_],["*"|_]|_]).
-threeWhite(["o",false,true,true,false,_,["e"|_],["e"|_]|_]).
-threeWhite(["o",false,true,true,false,_,["*"|_],["o"|_]|_]).
-threeWhite(["o",false,true,true,false,_,["*"|_],["e"|_]|_]).
-threeWhite(["o",false,true,true,false,_,["*"|_],["*"|_]|_]).
-threeWhite(["o",false,true,true,false,_,["o"|_],["e"|_]|_]).
-threeWhite(["o",false,true,true,false,_,["o"|_],["*"|_]|_]).
+threeWhite(["o",_,_,_,_,["e"|_],_,_,["o"|_]|_]).
+threeWhite(["o",_,_,_,_,["e"|_],_,_,["*"|_]|_]).
+threeWhite(["o",_,_,_,_,["e"|_],_,_,["e"|_]|_]).
+threeWhite(["o",_,_,_,_,["*"|_],_,_,["o"|_]|_]).
+threeWhite(["o",_,_,_,_,["*"|_],_,_,["e"|_]|_]).
+threeWhite(["o",_,_,_,_,["*"|_],_,_,["*"|_]|_]).
+threeWhite(["o",_,_,_,_,["o"|_],_,_,["e"|_]|_]).
+threeWhite(["o",_,_,_,_,["o"|_],_,_,["*"|_]|_]).
 
-threeWhite(["o",false,true,true,false,["e"|_],_,_,["o"|_]|_]).
-threeWhite(["o",false,true,true,false,["e"|_],_,_,["*"|_]|_]).
-threeWhite(["o",false,true,true,false,["e"|_],_,_,["e"|_]|_]).
-threeWhite(["o",false,true,true,false,["*"|_],_,_,["o"|_]|_]).
-threeWhite(["o",false,true,true,false,["*"|_],_,_,["e"|_]|_]).
-threeWhite(["o",false,true,true,false,["*"|_],_,_,["*"|_]|_]).
-threeWhite(["o",false,true,true,false,["o"|_],_,_,["e"|_]|_]).
-threeWhite(["o",false,true,true,false,["o"|_],_,_,["*"|_]|_]).
-
-threeWhite(["o",true,false,false,true,["e"|_],_,_,["o"|_]|_]).
-threeWhite(["o",true,false,false,true,["e"|_],_,_,["*"|_]|_]).
-threeWhite(["o",true,false,false,true,["e"|_],_,_,["e"|_]|_]).
-threeWhite(["o",true,false,false,true,["*"|_],_,_,["o"|_]|_]).
-threeWhite(["o",true,false,false,true,["*"|_],_,_,["e"|_]|_]).
-threeWhite(["o",true,false,false,true,["*"|_],_,_,["*"|_]|_]).
-threeWhite(["o",true,false,false,true,["o"|_],_,_,["e"|_]|_]).
-threeWhite(["o",true,false,false,true,["o"|_],_,_,["*"|_]|_]).
 
 threeWhite(["e"|_]).
 threeWhite(["*"|_]).
 
+threeWhiteLine(Line):-
+    maplist(threeWhite,Line).
 
+threeWhitePuzzle(Puzzle):-
+    maplist(threeWhiteLine,Puzzle).
 
 circle_Tile([Tile|Line], Tile2):-
  (eTile(Tile) ->
