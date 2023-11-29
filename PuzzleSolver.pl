@@ -47,6 +47,7 @@ write_Puzzles(Stream,Puzzle):-
 
 color(Line):-
    maplist(cornerByWhite,Line),
+   maplist(threeWhite,Line),
     maplist(noStraightLinesToBlack,Line).
 
 unnamed_line(Line):-
@@ -495,6 +496,50 @@ get_link(Tile,Link):-
     Tile = [_, _, _, _, _, _, _, _, _, Link].
 
 
+threeWhite(["o",false,true,true,false,["o",false,true,true,false|_],_,_,["o",false,true,true,false|_]|_]).
+threeWhite(["o",true,false,false,true,_,["o",true,false,false,true|_],["o",true,false,false,true|_]|_]).
+
+threeWhite(["o",true,false,false,true,_,["e"|_],["o"|_]|_]).
+threeWhite(["o",true,false,false,true,_,["e"|_],["*"|_]|_]).
+threeWhite(["o",true,false,false,true,_,["e"|_],["e"|_]|_]).
+threeWhite(["o",true,false,false,true,_,["*"|_],["o"|_]|_]).
+threeWhite(["o",true,false,false,true,_,["*"|_],["e"|_]|_]).
+threeWhite(["o",true,false,false,true,_,["*"|_],["*"|_]|_]).
+threeWhite(["o",true,false,false,true,_,["o"|_],["e"|_]|_]).
+threeWhite(["o",true,false,false,true,_,["o"|_],["*"|_]|_]).
+
+threeWhite(["o",false,true,true,false,_,["e"|_],["o"|_]|_]).
+threeWhite(["o",false,true,true,false,_,["e"|_],["*"|_]|_]).
+threeWhite(["o",false,true,true,false,_,["e"|_],["e"|_]|_]).
+threeWhite(["o",false,true,true,false,_,["*"|_],["o"|_]|_]).
+threeWhite(["o",false,true,true,false,_,["*"|_],["e"|_]|_]).
+threeWhite(["o",false,true,true,false,_,["*"|_],["*"|_]|_]).
+threeWhite(["o",false,true,true,false,_,["o"|_],["e"|_]|_]).
+threeWhite(["o",false,true,true,false,_,["o"|_],["*"|_]|_]).
+
+threeWhite(["o",false,true,true,false,["e"|_],_,_,["o"|_]|_]).
+threeWhite(["o",false,true,true,false,["e"|_],_,_,["*"|_]|_]).
+threeWhite(["o",false,true,true,false,["e"|_],_,_,["e"|_]|_]).
+threeWhite(["o",false,true,true,false,["*"|_],_,_,["o"|_]|_]).
+threeWhite(["o",false,true,true,false,["*"|_],_,_,["e"|_]|_]).
+threeWhite(["o",false,true,true,false,["*"|_],_,_,["*"|_]|_]).
+threeWhite(["o",false,true,true,false,["o"|_],_,_,["e"|_]|_]).
+threeWhite(["o",false,true,true,false,["o"|_],_,_,["*"|_]|_]).
+
+threeWhite(["o",true,false,false,true,["e"|_],_,_,["o"|_]|_]).
+threeWhite(["o",true,false,false,true,["e"|_],_,_,["*"|_]|_]).
+threeWhite(["o",true,false,false,true,["e"|_],_,_,["e"|_]|_]).
+threeWhite(["o",true,false,false,true,["*"|_],_,_,["o"|_]|_]).
+threeWhite(["o",true,false,false,true,["*"|_],_,_,["e"|_]|_]).
+threeWhite(["o",true,false,false,true,["*"|_],_,_,["*"|_]|_]).
+threeWhite(["o",true,false,false,true,["o"|_],_,_,["e"|_]|_]).
+threeWhite(["o",true,false,false,true,["o"|_],_,_,["*"|_]|_]).
+
+threeWhite(["e"|_]).
+threeWhite(["*"|_]).
+
+
+
 circle_Tile([Tile|Line], Tile2):-
  (eTile(Tile) ->
  circle_Tile(Line,Tile2)
@@ -508,4 +553,4 @@ circle_Tile([Tile|Line], Tile2):-
 
 eTile(["e",false,false,false,false|_]).
 :- run.
-:- halt.
+%:- halt.
