@@ -275,11 +275,13 @@ process_subList_border([Sublist|Sublists]):-
     process_subList_border(Sublists).
 
 illegal_Down(Tile):-
-    get_elements_from_tile(Tile,[_,_,Down,_,_]),
+    Tile = [_,_,Down,_,_,_,_,UpTile,_,_],
+    blackOneFromDownBorder(UpTile),
     Down = false.
 
 illegal_Up(Tile):-
-    get_elements_from_tile(Tile,[_,_,_,Up,_]),
+    Tile = [_,_,_,Up,_,_,DownTile,_,_,_],
+    blackOneFromUpBorder(DownTile),
     Up = false.
 illegal_Right(Tile):-
     get_elements_from_tile(Tile,[_, _, _, _,Right]),
@@ -597,6 +599,22 @@ blackTwoLeftWhite(["*",_,_,_,_,[]|_]).
 blackTwoLeftWhite(["o"|_]).
 blackTwoLeftWhite(["e"|_]).
 
+blackOneFromRightBorder(["*",true,_,_,false|_]).
+blackOneFromRightBorder(["o"|_]).
+blackOneFromRightBorder(["e"|_]).
+
+blackOneFromLeftBorder(["*",false,_,_,true]).
+blackOneFromLeftBorder(["o"|_]).
+blackOneFromLeftBorder(["e"|_]).
+
+blackOneFromUpBorder(["*",_,true,false,_]).
+blackOneFromUpBorder(["o"|_]).
+blackOneFromUpBorder(["e"|_]).
+
+blackOneFromDownBorder(["*",_,false,true,_]).
+blackOneFromDownBorder(["o"|_]).
+blackOneFromDownBorder(["e"|_]).
+
 blackTwoWhite(Tile):-
     blackTwoDownWhite(Tile),
     blackTwoUpWhite(Tile),
@@ -620,7 +638,7 @@ circle_Tile([Tile|Line], Tile2):-
   Tile2 = [_,_,_,_,_,_,_,_,_,Link2],
   Link3 == Link2,
   circle_Tile(Line,Tile)
- ) .
+ ).
 
 
 eTile(["e",false,false,false,false|_]).
