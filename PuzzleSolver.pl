@@ -205,30 +205,6 @@ get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]):-
 valid_Line(Line):-
     maplist(validTile,Line).
 
-%validTiles(Tile):-
- %   member(Tile, [["*",true,true,false,false,[_,true,false,false,true|_],[_,false,true,true,false|_]|_],
-  %  ["*",true,false,true,false,[_,true,false,false,true|_],_,[_,false,true,true,false|_]|_],
-   % ["*",false,true,false,true,_,[_,false,true,true,false|_],_,[_,true,false,false,true|_]|_],
-    %["*",false,false,true,true,_,_,[_,false,true,true,false|_],[_,true,false,false,true|_]|_],
-    %["o",true,false,false,true,[_,false,false,true,true|_]|_],
-    %["o",true,false,false,true,[_,false,true,false,true|_]|_],
-    %["o",true,false,false,true,_,_,_,[_,true,true,false,false|_]|_],
-    %["o",true,false,false,true,_,_,_,[_,true,false,true,false|_]|_],
-    %["o",false,true,true,false,_,_,[_,true,true,false,false|_]|_],
-    %["o",false,true,true,false,_,_,[_,false,true,false,true|_]|_],
-    %["o",false,true,true,false,_,_,[_,false,true,false,true|_]|_],
-    %["o",false,true,true,false,_,[_,true,false,true,false|_]|_],
-    %["e",true,true,false,false|_],
-    %["e",true,false,true,false|_],
-    %["e",false,true,true,false|_],
-    %["e",true,false,false,true|_],
-    %["e",false,true,false,true|_],
-    %["e",false,true,false,true|_],
-    %["e",false,false,false,false|_]
-    %]),
-    %write_tile(Tile).
-
-
 validTile(["*"|_]).
 validTile(["o"|_]).
 validTile(["e",true,true,false,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
@@ -348,39 +324,39 @@ noStraightLinesToBlack(["*",true,true,false,false,[_,true,false,false,true|Left_
     Link = Left_Link,
     Link= Down_Link.
 noStraightLinesToBlack(["*",true,false,true,false,[_,true,false,false,true|Rest1],_,[_,false,true,true,false|Rest2],_,Link]):-
-        last(Rest1,Left_Link),
-        last(Rest2,Down_Link),
-        Link = Left_Link,
-        Link= Down_Link.
+    last(Rest1,Left_Link),
+    last(Rest2,Down_Link),
+    Link = Left_Link,
+    Link= Down_Link.
 noStraightLinesToBlack(["*",false,true,false,true,_,[_,false,true,true,false|Rest1],_,[_,true,false,false,true|Rest2],Link]):-
-            last(Rest1,Left_Link),
-            last(Rest2,Down_Link),
-            Link = Left_Link,
-            Link= Down_Link.
+    last(Rest1,Left_Link),
+    last(Rest2,Down_Link),
+    Link = Left_Link,
+    Link= Down_Link.
 noStraightLinesToBlack(["*",false,false,true,true,_,_,[_,false,true,true,false|Rest1],[_,true,false,false,true|Rest2],Link]):-
-            last(Rest1,Left_Link),
-            last(Rest2,Down_Link),
-            Link = Left_Link,
-            Link= Down_Link.
+    last(Rest1,Left_Link),
+    last(Rest2,Down_Link),
+    Link = Left_Link,
+    Link= Down_Link.
 noStraightLinesToBlack(["o"|_]).
 noStraightLinesToBlack(["e"|_]).
 
 % ["e",true,false,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]
 
 cornerByWhite(["o",true,false,false,true,[_,false,false,true,true|Rest1],_,_,Tile_Right,Link]):-
-            last(Rest1,Left_Link),
-            last(Tile_Right,Down_Link),
-            get_elements_from_tile(Tile_Right,[Type,Left,Down,Up,Right]),
-            Right = true,
-            Link = Left_Link,
-            Link = Down_Link.
+    last(Rest1,Left_Link),
+    last(Tile_Right,Down_Link),
+    get_elements_from_tile(Tile_Right,[Type,Left,Down,Up,Right]),
+    Right = true,
+    Link = Left_Link,
+    Link = Down_Link.
 cornerByWhite(["o",true,false,false,true,[_,false,true,false,true|Rest1],_,_,Tile_Right,Link]):-
-            last(Rest1,Left_Link),
-            last(Tile_Right,Down_Link),
-            get_elements_from_tile(Tile_Right,[Type,Left,Down,Up,Right]),
-            Right = true,
-            Link = Left_Link,
-            Link = Down_Link.
+    last(Rest1,Left_Link),
+    last(Tile_Right,Down_Link),
+    get_elements_from_tile(Tile_Right,[Type,Left,Down,Up,Right]),
+    Right = true,
+    Link = Left_Link,
+    Link = Down_Link.
 cornerByWhite(["o",true,false,false,true,Tile_Left,_,_,[_,true,true,false,false|Rest1],Link]):-
     last(Rest1,Left_Link),
     last(Tile_Left,Down_Link),
