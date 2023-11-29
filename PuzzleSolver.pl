@@ -40,7 +40,7 @@ solve_Puzzle(Puzzle):-
 
     maplist(valid_Line,Puzzle),
 
-    maplist(unifyLine,Puzzle),
+   % maplist(unifyLine,Puzzle),
 
     preventCircles(Puzzle).
 write_Puzzles(Stream,Puzzle):-
@@ -366,14 +366,19 @@ noStraightLinesToBlack(["o"|_]).
 noStraightLinesToBlack(["e"|_]).
 
 % ["e",true,false,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]
+
 cornerByWhite(["o",true,false,false,true,[_,false,false,true,true|Rest1],_,_,Tile_Right,Link]):-
             last(Rest1,Left_Link),
             last(Tile_Right,Down_Link),
+            get_elements_from_tile(Tile_Right,[Type,Left,Down,Up,Right]),
+            Right = true,
             Link = Left_Link,
             Link = Down_Link.
 cornerByWhite(["o",true,false,false,true,[_,false,true,false,true|Rest1],_,_,Tile_Right,Link]):-
             last(Rest1,Left_Link),
             last(Tile_Right,Down_Link),
+            get_elements_from_tile(Tile_Right,[Type,Left,Down,Up,Right]),
+            Right = true,
             Link = Left_Link,
             Link = Down_Link.
 cornerByWhite(["o",true,false,false,true,Tile_Left,_,_,[_,true,true,false,false|Rest1],Link]):-
@@ -390,11 +395,15 @@ cornerByWhite(["o",true,false,false,true,Tile_Left,_,_,[_,true,false,true,false|
 cornerByWhite(["o",false,true,true,false,_,Tile_Down,[_,true,true,false,false|Rest1], _,Link]):-
     last(Rest1,Left_Link),
     last(Tile_Down,Down_Link),
+    get_elements_from_tile(Tile_Down,[Type,Left,Down,Up,Right]),
+    Down = true,
     Link = Left_Link,
     Link = Down_Link.
 cornerByWhite(["o",false,true,true,false,_,Tile_Down,[_,false,true,false,true|Rest1], _, Link]):-
     last(Rest1,Left_Link),
     last(Tile_Down,Down_Link),
+    get_elements_from_tile(Tile_Down,[Type,Left,Down,Up,Right]),
+    Down = true,
     Link = Left_Link,
     Link = Down_Link.
 cornerByWhite(["o",false,true,true,false,_,[_,false,false,true,true|Rest1],Tile_up,_, Link]):-
