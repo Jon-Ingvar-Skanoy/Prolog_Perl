@@ -33,7 +33,7 @@ solve_Puzzle(Puzzle):-
     maplist(unnamed_line,Puzzle),
 
     borders(Puzzle),
-    threeWhitePuzzle(Puzzle),
+%    threeWhitePuzzle(Puzzle),
     maplist(color,Puzzle),
 
 
@@ -233,7 +233,7 @@ validTile(["*"|_]).
 validTile(["o"|_]).
 validTile(["e",true,true,false,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
     get_link(Tile_Left,Left_Link),
-    get_link(Tile_down,Down_Link),
+    get_link(Tile_Right,Right_Link),
     Link = Left_Link,
     Link = Down_Link.
 validTile(["e",true,false,true,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
@@ -276,12 +276,12 @@ process_subList_border([Sublist|Sublists]):-
 
 illegal_Down(Tile):-
     Tile = [_,_,Down,_,_,_,_,UpTile,_,_],
-    blackOneFromDownBorder(UpTile),
+  %  blackOneFromDownBorder(UpTile),
     Down = false.
 
 illegal_Up(Tile):-
     Tile = [_,_,_,Up,_,_,DownTile,_,_,_],
-    blackOneFromUpBorder(DownTile),
+   % blackOneFromUpBorder(DownTile),
     Up = false.
 illegal_Right(Tile):-
     get_elements_from_tile(Tile,[_, _, _, _,Right]),
@@ -547,7 +547,7 @@ adjacentHorizontalBlack(["*",_,_,_,_,_,_,_,[]|_]).
 adjacentHorizontalBlack(["e"|_]).
 adjacentHorizontalBlack(["o"|_]).
 
-adjacentVerticalBlack(["*",_,false,true,_,["*",_,true,false,_|_]|_]).
+adjacentVerticalBlack(["*",_,false,true,_,_, ["*",_,true,false,_|_]|_]).
 adjacentVerticalBlack(["*",_,_,_,_,_,["e"|_]|_]).
 adjacentVerticalBlack(["*",_,_,_,_,_,["o"|_]|_]).
 adjacentVerticalBlack(["*",_,_,_,_,_,[]|_]).
@@ -643,4 +643,4 @@ circle_Tile([Tile|Line], Tile2):-
 
 eTile(["e",false,false,false,false|_]).
 :- run.
-%:- halt.
+:- halt.
