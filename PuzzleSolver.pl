@@ -141,7 +141,7 @@ borders(Puzzle):-
 
 read_lines_find_size(Stream,not_in_list,Puzzles_in, Puzzles_out):-
     read_line_to_string(Stream,Line),
-   % writeln(Line),
+    writeln(Line),
     (Line == end_of_file ->
 
     Puzzles_out = Puzzles_in
@@ -170,8 +170,10 @@ read_lines_to_list(Stream, in_list, Width,Height, Creation_list,Puzzle):-
 
     (CurrentHeight < Height ->
         read_line_to_string(Stream, Line),
-        process_line(Line,List_Line),
 
+        process_line(Line,List_Line),
+         write("   "),
+         writeln(Line),
         append(Creation_list,[List_Line],Appended_List),
         (Line == end_of_file -> true ;
         read_lines_to_list(Stream, in_list, Width,Height, Appended_List,  Puzzle)
@@ -182,8 +184,8 @@ read_lines_to_list(Stream, in_list, Width,Height, Creation_list,Puzzle):-
     .
 
 process_line(Line,List):-
-
-    split_string(Line, " ", "", Split_Line),
+    split_string(Line, "", "\s\t\n", [N_Line]),
+    split_string(N_Line, " ", "", Split_Line),
     maplist(extended_element, Split_Line,List)
     .
 
@@ -506,4 +508,4 @@ circle_Tile([Tile|Line], Tile2):-
 
 eTile(["e",false,false,false,false|_]).
 :- run.
-%:- halt.
+:- halt.
