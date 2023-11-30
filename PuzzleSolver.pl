@@ -677,6 +677,8 @@ circle_Tile([Tile|Line], Tile2):-
  ).
 
 
+
+
 find_other_Link_Line(Link,Line):-
 
     not(maplist(find_other_Link(Link),Line)).
