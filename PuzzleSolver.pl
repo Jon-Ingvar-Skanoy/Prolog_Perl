@@ -33,7 +33,7 @@ solve_Puzzle(Puzzle):-
     maplist(unnamed_line,Puzzle),
 
     borders(Puzzle),
-    threeWhitePuzzle(Puzzle),
+    %threeWhitePuzzle(Puzzle),
     maplist(color,Puzzle),
 
 
@@ -241,60 +241,41 @@ validTile(Puzzle,["e",true,true,false,false, Tile_Left,Tile_down,Tile_up,Tile_ri
 
     get_link(Tile_Left,Left_Link),
     get_link(Tile_Right,Right_Link),
-    (Left_Link == Down_Link ->
-     maplist(find_other_Link_Line(Left_Link),Puzzle)
-     ;
-     true),
     Link = Left_Link,
     Link = Down_Link.
 validTile(Puzzle,["e",true,false,true,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
 
     get_link(Tile_Left,Link2),
     get_link(Tile_up,Link3),
-     (Link2 == Link2 ->
-         maplist(find_other_Link_Line(Link2),Puzzle)
-         ;
-         true),
+
     Link = Link2,
     Link = Link3.
 validTile(Puzzle,["e",false,true,true,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
 
     get_link(Tile_down,Link2),
     get_link(Tile_up,Link3),
-     (Link2 == Link2 ->
-             maplist(find_other_Link_Line(Link2),Puzzle)
-             ;
-             true),
+
     Link = Link2,
     Link = Link3.
 validTile(Puzzle,["e",true,false,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
 
      get_link(Tile_Left,Link2),
      get_link(Tile_right,Link3),
-      (Link2 == Link2 ->
-              maplist(find_other_Link_Line(Link2),Puzzle)
-              ;
-              true),
+
      Link = Link2,
      Link = Link3.
 validTile(Puzzle,["e",false,true,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
 
      get_link(Tile_down,Link2),
      get_link(Tile_right,Link3),
-      (Link2 == Link2 ->
-              maplist(find_other_Link_Line(Link2),Puzzle)
-              ;
-              true),
+
      Link = Link2,
      Link = Link3.
 validTile(Puzzle,["e",false,false,true,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
 
      get_link(Tile_up,Link2),
      get_link(Tile_right,Link3),
-      (Link2 == Link2 ->
-              maplist(find_other_Link_Line(Link2),Puzzle)
-              ;
-              true),
+
      Link = Link2,
      Link = Link3.
 validTile(Puzzle,["e",false,false,false,false|_]).
@@ -545,30 +526,49 @@ get_link(Tile,Link):-
     Tile = [_, _, _, _, _, _, _, _, _, Link].
 
 
-threeWhite(["o",false,true,true,false,["o",false,true,true,false|_],_,_,["o",false,true,true,false|_]|_]).
-threeWhite(["o",true,false,false,true,_,["o",true,false,false,true|_],["o",true,false,false,true|_]|_]).
+threeWhiteHorizontal(["o",false,true,true,false,["o",false,true,true,false|_],_,_,["o",false,true,true,false|_]|_]).
+threeWhiteVertical(["o",true,false,false,true,_,["o",true,false,false,true|_],["o",true,false,false,true|_]|_]).
 
-threeWhite(["o",_,_,_,_,_,["e"|_],["o"|_]|_]).
-threeWhite(["o",_,_,_,_,_,["e"|_],["*"|_]|_]).
-threeWhite(["o",_,_,_,_,_,["e"|_],["e"|_]|_]).
-threeWhite(["o",_,_,_,_,_,["*"|_],["o"|_]|_]).
-threeWhite(["o",_,_,_,_,_,["*"|_],["e"|_]|_]).
-threeWhite(["o",_,_,_,_,_,["*"|_],["*"|_]|_]).
-threeWhite(["o",_,_,_,_,_,["o"|_],["e"|_]|_]).
-threeWhite(["o",_,_,_,_,_,["o"|_],["*"|_]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,["e"|_],["o"|_]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,["e"|_],["*"|_]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,["e"|_],["e"|_]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,["e"|_],[]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,["*"|_],["o"|_]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,["*"|_],[]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,["*"|_],["e"|_]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,["*"|_],["*"|_]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,["o"|_],["e"|_]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,["o"|_],["*"|_]|_]).
+threewhitevertical(["o",_,_,_,_,_,["o"|_],[]|_]).
+threewhitevertical(["o",_,_,_,_,_,[],["e"|_]|_]).
+threewhitevertical(["o",_,_,_,_,_,[],["o"|_]|_]).
+threewhitevertical(["o",_,_,_,_,_,[],["*"|_]|_]).
 
-threeWhite(["o",_,_,_,_,["e"|_],_,_,["o"|_]|_]).
-threeWhite(["o",_,_,_,_,["e"|_],_,_,["*"|_]|_]).
-threeWhite(["o",_,_,_,_,["e"|_],_,_,["e"|_]|_]).
-threeWhite(["o",_,_,_,_,["*"|_],_,_,["o"|_]|_]).
-threeWhite(["o",_,_,_,_,["*"|_],_,_,["e"|_]|_]).
-threeWhite(["o",_,_,_,_,["*"|_],_,_,["*"|_]|_]).
-threeWhite(["o",_,_,_,_,["o"|_],_,_,["e"|_]|_]).
-threeWhite(["o",_,_,_,_,["o"|_],_,_,["*"|_]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,["e"|_],_,_,["o"|_]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,["e"|_],_,_,["*"|_]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,["e"|_],_,_,[]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,["e"|_],_,_,["e"|_]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,["*"|_],_,_,["o"|_]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,["*"|_],_,_,["e"|_]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,["*"|_],_,_,["*"|_]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,["*"|_],_,_,[]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,["o"|_],_,_,["e"|_]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,["o"|_],_,_,["*"|_]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,["o"|_],_,_,[]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,[],_,_,["o"|_]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,[],_,_,["*"|_]|_]).
+threeWhiteHorizontal(["o",_,_,_,_,[],_,_,["e"|_]|_]).
 
+threeWhiteHorizontal(["e"|_]).
+threeWhiteHorizontal(["*"|_]).
 
-threeWhite(["e"|_]).
-threeWhite(["*"|_]).
+threeWhiteVertical(["e"|_]).
+threeWhiteVertical(["*"|_]).
+
+threeWhite(Tile):-
+ threeWhiteVertical(Tile),
+ threeWhiteHorizontal(Tile).
+
 
 %adjacentBlack(["*",false,true,false,true,["*",true,_,_,false|_],_,["*",_,false,true,_|_]|_]).
 %adjacentBlack(["*",true,true,false,false,_,_,["*",_,false,true,_|_],["*",false,_,_,true|_]|_]).
