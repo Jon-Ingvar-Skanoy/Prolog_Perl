@@ -33,7 +33,7 @@ solve_Puzzle(Puzzle):-
     maplist(unnamed_line,Puzzle),
 
     borders(Puzzle),
-    %threeWhitePuzzle(Puzzle),
+    threeWhitePuzzle(Puzzle),!,
     maplist(color,Puzzle),
 
 
@@ -239,14 +239,20 @@ validTile(Puzzle,["*"|_]).
 validTile(Puzzle,["o"|_]).
 validTile(Puzzle,["e",true,true,false,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
 
-    get_link(Tile_Left,Left_Link),
-    get_link(Tile_Right,Right_Link),
-    Link = Left_Link,
-    Link = Down_Link.
+    get_link(Tile_Left,Link2),
+    get_link(Tile_Right,Link3),
+
+    Link = Link2,
+    Link = Link3.
 validTile(Puzzle,["e",true,false,true,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
 
     get_link(Tile_Left,Link2),
     get_link(Tile_up,Link3),
+    (Link2 == Link3 ->
+    writeln(2)
+    ;
+
+    )
 
     Link = Link2,
     Link = Link3.
@@ -539,10 +545,10 @@ threeWhiteVertical(["o",_,_,_,_,_,["*"|_],["e"|_]|_]).
 threeWhiteVertical(["o",_,_,_,_,_,["*"|_],["*"|_]|_]).
 threeWhiteVertical(["o",_,_,_,_,_,["o"|_],["e"|_]|_]).
 threeWhiteVertical(["o",_,_,_,_,_,["o"|_],["*"|_]|_]).
-threewhitevertical(["o",_,_,_,_,_,["o"|_],[]|_]).
-threewhitevertical(["o",_,_,_,_,_,[],["e"|_]|_]).
-threewhitevertical(["o",_,_,_,_,_,[],["o"|_]|_]).
-threewhitevertical(["o",_,_,_,_,_,[],["*"|_]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,["o"|_],[]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,[],["e"|_]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,[],["o"|_]|_]).
+threeWhiteVertical(["o",_,_,_,_,_,[],["*"|_]|_]).
 
 threeWhiteHorizontal(["o",_,_,_,_,["e"|_],_,_,["o"|_]|_]).
 threeWhiteHorizontal(["o",_,_,_,_,["e"|_],_,_,["*"|_]|_]).
