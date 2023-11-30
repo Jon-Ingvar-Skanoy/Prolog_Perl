@@ -33,15 +33,16 @@ solve_Puzzle(Puzzle):-
     maplist(unnamed_line,Puzzle),
 
     borders(Puzzle),
-%    threeWhitePuzzle(Puzzle),
+    threeWhitePuzzle(Puzzle),
     maplist(color,Puzzle),
 
 
 
-    maplist(valid_Line,Puzzle),
+  %  Puzzle = [Line1, Line2, Line3, Line4, Line5, Line6, Line7, Line8, Line9, Line10, Line11, Line12, Line13, Line14, Line15],
+   % Puzzle1 = [Line7, Line8, Line6, Line9, Line5, Line10, Line11, Line4, Line12, Line3, Line13, Line2, Line14, Line1, Line15],
 
-   % maplist(unifyLine,Puzzle),
 
+    maplist(valid_Line(Puzzle),Puzzle),
     preventCircles(Puzzle).
 write_Puzzles(Stream,Puzzle):-
     writePuzzleDone(Puzzle,Stream).
@@ -202,8 +203,13 @@ get_size(Line,Size):-
 get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]):-
     Tile = [Type,Left,Down,Up,Right, _, _, _, _, _].
 
-valid_Line(Line):-
-    maplist(validTile,Line).
+valid_Line(Puzzle,Line):-
+
+%     Line = [Line1, Line2, Line3, Line4, Line5, Line6, Line7, Line8, Line9, Line10, Line11, Line12, Line13, Line14, Line15],
+ %    New = [Line7, Line8, Line6, Line9, Line10, Line5, Line11, Line4, Line12, Line3, Line13, Line2, Line14, Line1, Line15],
+
+
+    maplist(validTile(Puzzle),Line).
 
 %validTiles(Tile):-
  %   member(Tile, [["*",true,true,false,false,[_,true,false,false,true|_],[_,false,true,true,false|_]|_],
@@ -229,39 +235,69 @@ valid_Line(Line):-
     %write_tile(Tile).
 
 
-validTile(["*"|_]).
-validTile(["o"|_]).
-validTile(["e",true,true,false,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+validTile(Puzzle,["*"|_]).
+validTile(Puzzle,["o"|_]).
+validTile(Puzzle,["e",true,true,false,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+
     get_link(Tile_Left,Left_Link),
     get_link(Tile_Right,Right_Link),
+    (Left_Link == Down_Link ->
+     maplist(find_other_Link_Line(Left_Link),Puzzle)
+     ;
+     true),
     Link = Left_Link,
     Link = Down_Link.
-validTile(["e",true,false,true,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+validTile(Puzzle,["e",true,false,true,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+
     get_link(Tile_Left,Link2),
     get_link(Tile_up,Link3),
+     (Link2 == Link2 ->
+         maplist(find_other_Link_Line(Link2),Puzzle)
+         ;
+         true),
     Link = Link2,
     Link = Link3.
-validTile(["e",false,true,true,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+validTile(Puzzle,["e",false,true,true,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+
     get_link(Tile_down,Link2),
     get_link(Tile_up,Link3),
+     (Link2 == Link2 ->
+             maplist(find_other_Link_Line(Link2),Puzzle)
+             ;
+             true),
     Link = Link2,
     Link = Link3.
-validTile(["e",true,false,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+validTile(Puzzle,["e",true,false,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+
      get_link(Tile_Left,Link2),
      get_link(Tile_right,Link3),
+      (Link2 == Link2 ->
+              maplist(find_other_Link_Line(Link2),Puzzle)
+              ;
+              true),
      Link = Link2,
      Link = Link3.
-validTile(["e",false,true,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+validTile(Puzzle,["e",false,true,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+
      get_link(Tile_down,Link2),
      get_link(Tile_right,Link3),
+      (Link2 == Link2 ->
+              maplist(find_other_Link_Line(Link2),Puzzle)
+              ;
+              true),
      Link = Link2,
      Link = Link3.
-validTile(["e",false,false,true,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+validTile(Puzzle,["e",false,false,true,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
+
      get_link(Tile_up,Link2),
      get_link(Tile_right,Link3),
+      (Link2 == Link2 ->
+              maplist(find_other_Link_Line(Link2),Puzzle)
+              ;
+              true),
      Link = Link2,
      Link = Link3.
-validTile(["e",false,false,false,false|_]).
+validTile(Puzzle,["e",false,false,false,false|_]).
 
 
 process_subList_border([]).
@@ -641,6 +677,30 @@ circle_Tile([Tile|Line], Tile2):-
  ).
 
 
+find_other_Link_Line(Link,Line):-
+
+    not(maplist(find_other_Link(Link),Line)).
+
+
+find_other_Link(Link,[["e"|_]]).
+find_other_Link([Link,["o", _, _, _, _, _, _, _, _, Link1]]):-
+    (Link == Link1).
+find_other_Link(Link,[["*", _, _, _, _, _, _, _, _, Link1]]):-
+    (Link == Link1).
+
+
+% [_, _, _, _, _, _, _, _, _, Link]
+
+validTile_control(Tile):-
+    Tile = [Type,Left,Down,Up,Right, Tile_Left,Tile_down,Tile_up,Tile_right, _],
+    (nonvar(Left) ; nonvar(Right) ; nonvar(Down) ; nonvar(Up) ),
+    validTile_control(Tile_right).
+validTile_control([]).
+validTile_control(Tile):-
+    Tile = [Type,Left,Down,Up,Right, Tile_Left,Tile_down,Tile_up,Tile_right, _],
+    (var(Left) ; var(Down)  ; var(Right) ;var(Up)),
+    validTile_control(Tile_right).
+
 eTile(["e",false,false,false,false|_]).
 :- run.
-:- halt.
+%:- halt.
