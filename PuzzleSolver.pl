@@ -42,8 +42,8 @@ solve_Puzzle(Puzzle):-
    % Puzzle1 = [Line7, Line8, Line6, Line9, Line5, Line10, Line11, Line4, Line12, Line3, Line13, Line2, Line14, Line1, Line15],
 
 
-    maplist(valid_Line(Puzzle),Puzzle),
-    preventCircles(Puzzle).
+    maplist(valid_Line(Puzzle),Puzzle).
+   % preventCircles(Puzzle).
 write_Puzzles(Stream,Puzzle):-
     writePuzzleDone(Puzzle,Stream).
 
@@ -237,53 +237,13 @@ valid_Line(Puzzle,Line):-
 
 validTile(Puzzle,["*"|_]).
 validTile(Puzzle,["o"|_]).
-validTile(Puzzle,["e",true,true,false,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
-
-    get_link(Tile_Left,Link2),
-    get_link(Tile_Right,Link3),
-
-    Link = Link2,
-    Link = Link3.
-validTile(Puzzle,["e",true,false,true,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
-
-    get_link(Tile_Left,Link2),
-    get_link(Tile_up,Link3),
-    (Link2 == Link3 ->
-    writeln(2)
-    ;
-
-    )
-
-    Link = Link2,
-    Link = Link3.
-validTile(Puzzle,["e",false,true,true,false, Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
-
-    get_link(Tile_down,Link2),
-    get_link(Tile_up,Link3),
-
-    Link = Link2,
-    Link = Link3.
-validTile(Puzzle,["e",true,false,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
-
-     get_link(Tile_Left,Link2),
-     get_link(Tile_right,Link3),
-
-     Link = Link2,
-     Link = Link3.
-validTile(Puzzle,["e",false,true,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
-
-     get_link(Tile_down,Link2),
-     get_link(Tile_right,Link3),
-
-     Link = Link2,
-     Link = Link3.
-validTile(Puzzle,["e",false,false,true,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]):-
-
-     get_link(Tile_up,Link2),
-     get_link(Tile_right,Link3),
-
-     Link = Link2,
-     Link = Link3.
+% [_,_,_,_,_,_,_,_,_,Link]
+validTile(Puzzle,["e",true,true,false,false, [_,_,_,_,_,_,_,_,_,Link],[_,_,_,_,_,_,_,_,_,Link],Tile_up,Tile_right, Link]).
+validTile(Puzzle,["e",true,false,true,false, [_,_,_,_,_,_,_,_,_,Link],Tile_down,[_,_,_,_,_,_,_,_,_,Link],Tile_right, Link]).
+validTile(Puzzle,["e",false,true,true,false, Tile_Left,[_,_,_,_,_,_,_,_,_,Link],[_,_,_,_,_,_,_,_,_,Link],Tile_right, Link]).
+validTile(Puzzle,["e",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],Tile_down,Tile_up,[_,_,_,_,_,_,_,_,_,Link], Link]).
+validTile(Puzzle,["e",false,true,false,true,Tile_Left,[_,_,_,_,_,_,_,_,_,Link],Tile_up,[_,_,_,_,_,_,_,_,_,Link], Link]).
+validTile(Puzzle,["e",false,false,true,true,Tile_Left,Tile_down,[_,_,_,_,_,_,_,_,_,Link],[_,_,_,_,_,_,_,_,_,Link], Link]).
 validTile(Puzzle,["e",false,false,false,false|_]).
 
 
@@ -503,6 +463,32 @@ getFirstLink([[Tile|RestOfLine]|RestOfPuzzle],FirstLink):-
 
 getFirstLink([[]|RestOfPuzzle]):-
     getFirstLink(RestOfPuzzle).
+test42_Puzzle(Link,Puzzle).
+     %(foreach(member(Line,Puzzle),foreach(member(Tile,Line),test42(Tile,Link)))->
+     %true
+     %;
+     %writeln(2)
+
+     %).
+
+test42(["e",Left,Down,Up,Right, A, B, C, D, Link],FirstLink):-
+
+    (Link == FirstLink ->
+
+   nonvar(Left),
+   nonvar(Right),
+   nonvar(Down),
+   nonvar(Up)
+
+
+    ;
+    true
+    ).
+
+    test42(["*",Left,Down,Up,Right, _, _, _, _, Link],FirstLink).
+    test42(["o",Left,Down,Up,Right, _, _, _, _, Link],FirstLink).
+
+
 
 test(Tile,FirstLink):-
 
