@@ -21,8 +21,8 @@ read_File(Infile, Outfile):-
          length(Puzzles_out,NrPuzzles),
          write(Stream_Out,NrPuzzles),
          write(Stream_Out,"\n"),
-         maplist(write_Puzzles(Stream_Out),Puzzles_out)
-       %  close(Stream_Out)
+         maplist(write_Puzzles(Stream_Out),Puzzles_out),
+         close(Stream_Out)
       .
 connect_Puzzles(Puzzle):-
     Puzzle = [Line1 | Puzzle_rest],
@@ -34,9 +34,7 @@ solve_Puzzle(Puzzle):-
 
     borders(Puzzle),
     threeWhitePuzzle(Puzzle),!,
-    flatten_first_level(Puzzle,Neww),
-     maplist(cornerByWhite,Neww),
-     maplist(noStraightLinesToBlack,Neww),
+    maplist(color,Puzzle),
 
 
 
@@ -44,12 +42,14 @@ solve_Puzzle(Puzzle):-
    % Puzzle1 = [Line7, Line8, Line6, Line9, Line5, Line10, Line11, Line4, Line12, Line3, Line13, Line2, Line14, Line1, Line15],
 
 
-    maplist(valid_Line,Puzzle).
-   %preventCircles(Puzzle).
+    maplist(valid_Line,Puzzle),
+   preventCircles(Puzzle).
 write_Puzzles(Stream,Puzzle):-
     writePuzzleDone(Puzzle,Stream).
 
-
+color(Line):-
+   maplist(cornerByWhite,Line),
+    maplist(noStraightLinesToBlack,Line).
 
 unnamed_line(Line):-
     maplist(unnamed_tile,Line).
@@ -168,12 +168,12 @@ cornerByWhite(["e"|_]).
 validTile(["*"|_]).
 validTile(["o"|_]).
 % [_,_,_,_,_,_,_,_,_,Link]
-validTile(["e",true,true,false,false, [_,_,_,_,_,_,_,_,_,Link],[_,_,_,_,_,_,_,_,_,Link],Tile_up,Tile_right, Link]).
+validTile(["e",true,true,false,false, [_,_,_,_,_,_,_,_,_,Link],Tile_down,Tile_up,Tile_right, Link]).
 validTile(["e",true,false,true,false, [_,_,_,_,_,_,_,_,_,Link],Tile_down,[_,_,_,_,_,_,_,_,_,Link],Tile_right, Link]).
-validTile(["e",false,true,true,false, Tile_Left,[_,_,_,_,_,_,_,_,_,Link],[_,_,_,_,_,_,_,_,_,Link],Tile_right, Link]).
-validTile(["e",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],Tile_down,Tile_up,[_,_,_,_,_,_,_,_,_,Link], Link]).
-validTile(["e",false,true,false,true,Tile_Left,[_,_,_,_,_,_,_,_,_,Link],Tile_up,[_,_,_,_,_,_,_,_,_,Link], Link]).
-validTile(["e",false,false,true,true,Tile_Left,Tile_down,[_,_,_,_,_,_,_,_,_,Link],[_,_,_,_,_,_,_,_,_,Link], Link]).
+validTile(["e",false,true,true,false, Tile_Left,_,[_,_,_,_,_,_,_,_,_,Link],Tile_right, Link]).
+validTile(["e",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],Tile_down,Tile_up,_,Link]).
+validTile(["e",false,true,false,true,Tile_Left,_,Tile_up,_, Link]).
+validTile(["e",false,false,true,true,Tile_Left,Tile_down,[_,_,_,_,_,_,_,_,_,Link],_, Link]).
 validTile(["e",false,false,false,false|_]).
 
 
@@ -547,15 +547,6 @@ validTile_control(Tile):-
     Tile = [Type,Left,Down,Up,Right, Tile_Left,Tile_down,Tile_up,Tile_right, _],
     (var(Left) ; var(Down)  ; var(Right) ;var(Up)),
     validTile_control(Tile_right).
-
-
-
-flatten_first_level([], []).
-
-
-flatten_first_level([Head|Tail], FlatList) :-
-    flatten_first_level(Tail, FlatTail),
-    append(Head, FlatTail, FlatList).
 
 eTile(["e",false,false,false,false|_]).
 :- run.
