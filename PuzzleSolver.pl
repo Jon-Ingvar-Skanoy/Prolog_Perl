@@ -168,12 +168,12 @@ cornerByWhite(["e"|_]).
 validTile(["*"|_]).
 validTile(["o"|_]).
 % [_,_,_,_,_,_,_,_,_,Link]
-validTile(["e",true,true,false,false, [_,_,_,_,_,_,_,_,_,Link],_,_,_, Link]).
-validTile(["e",true,false,true,false, [_,_,_,_,_,_,_,_,_,Link],_,[_,_,_,_,_,_,_,_,_,Link],_, Link]).
-validTile(["e",false,true,true,false, _,_,[_,_,_,_,_,_,_,_,_,Link],_, Link]).
-validTile(["e",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],_,_,_,Link]).
-validTile(["e",false,true,false,true,_,_,-,_, Link]).
-validTile(["e",false,false,true,true,_,_,[_,_,_,_,_,_,_,_,_,Link],_, Link]).
+validTile(["e",true,true,false,false, [_,_,_,_,_,_,_,_,_,Link],Tile_down,Tile_up,Tile_right, Link]).
+validTile(["e",true,false,true,false, [_,_,_,_,_,_,_,_,_,Link],Tile_down,[_,_,_,_,_,_,_,_,_,Link],Tile_right, Link]).
+validTile(["e",false,true,true,false, Tile_Left,_,[_,_,_,_,_,_,_,_,_,Link],Tile_right, Link]).
+validTile(["e",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],Tile_down,Tile_up,_,Link]).
+validTile(["e",false,true,false,true,Tile_Left,_,Tile_up,_, Link]).
+validTile(["e",false,false,true,true,Tile_Left,Tile_down,[_,_,_,_,_,_,_,_,_,Link],_, Link]).
 validTile(["e",false,false,false,false|_]).
 
 
@@ -550,4 +550,4 @@ validTile_control(Tile):-
 
 eTile(["e",false,false,false,false|_]).
 :- run.
-%:- halt.
+:- halt.
