@@ -38,8 +38,8 @@ solve_Puzzle(Puzzle):-
 
 
 
-  %  Puzzle = [Line1, Line2, Line3, Line4, Line5, Line6, Line7, Line8, Line9, Line10, Line11, Line12, Line13, Line14, Line15],
-   % Puzzle1 = [Line7, Line8, Line6, Line9, Line5, Line10, Line11, Line4, Line12, Line3, Line13, Line2, Line14, Line1, Line15],
+%    Puzzle = [Line1, Line2, Line3, Line4, Line5, Line6, Line7, Line8, Line9, Line10, Line11, Line12, Line13, Line14, Line15],
+ %  Puzzle1 = [Line7, Line8, Line6, Line9, Line5, Line10, Line11, Line4, Line12, Line3, Line13, Line2, Line14, Line1, Line15],
 
 
     maplist(valid_Line,Puzzle),
@@ -143,38 +143,35 @@ get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]):-
 
 valid_Line(Line):-
  maplist(validTile,Line).
-
+noStraightLinesToBlack(["o"|_]).
+noStraightLinesToBlack(["e"|_]).
 noStraightLinesToBlack(["*",true,true,false,false,[_,true,false,false,true,_,_,_,_,Link],[_,false,true,true,false,_,_,_,_,Link1],_,_,Link]).
 noStraightLinesToBlack(["*",true,false,true,false,[_,true,false,false,true,_,_,_,_,Link],_,[_,false,true,true,false,_,_,_,_,Link],_,Link]).
 noStraightLinesToBlack(["*",false,true,false,true,_,[_,false,true,true,false,_,_,_,_,Link2],_,[_,true,false,false,true,_,_,_,_,Link1],Link]).
 noStraightLinesToBlack(["*",false,false,true,true,_,_,[_,false,true,true,false,_,_,_,_,Link],[_,true,false,false,true,_,_,_,_,Link1],Link]).
-noStraightLinesToBlack(["o"|_]).
-noStraightLinesToBlack(["e"|_]).
 
 
-cornerByWhite(["o",true,false,false,true,[_,false,false,true,true,_,_,_,_,Link],_,_,[_,_,_,_,true,_,_,_,_,Link1],Link]).
-cornerByWhite(["o",true,false,false,true,[_,false,true,false,true,_,_,_,_,Link],_,_,[_,_,_,_,true,_,_,_,_,Link1],Link]).
-cornerByWhite(["o",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],_,_,[_,true,true,false,false,_,_,_,_,Link1],Link]).
-cornerByWhite(["o",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],_,_,[_,true,false,true,false,_,_,_,_,Link1],Link]).
-cornerByWhite(["o",false,true,true,false,_,[_,_,true,_,_,_,_,_,_,Link1],[_,true,true,false,false,_,_,_,_,Link], _,Link]).
-cornerByWhite(["o",false,true,true,false,_,[_,_,true,_,_,_,_,_,_,Link1],[_,false,true,false,true,_,_,_,_,Link], _, Link]).
-
-
-cornerByWhite(["o",false,true,true,false,_,[_,false,false,true,true,_,_,_,_,Link1],[_,_,_,_,_,_,_,_,_,Link],_, Link]).
-cornerByWhite(["o",false,true,true,false,_,[_,true,false,true,false,_,_,_,_,Link1],[_,_,_,_,_,_,_,_,_,Link],_, Link]).
 cornerByWhite(["*"|_]).
 cornerByWhite(["e"|_]).
+
+cornerByWhite(["o",true,false,false,true,[_,false,_,_,true,_,_,_,_,Link],_,_,[_,_,_,_,true,_,_,_,_,Link1],Link]).
+cornerByWhite(["o",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],_,_,[_,true,_,_,false,_,_,_,_,Link1],Link]).
+cornerByWhite(["o",false,true,true,false,_,[_,_,true,_,_,_,_,_,_,Link1],[_,_,true,false,_,_,_,_,_,Link], _, Link]).
+cornerByWhite(["o",false,true,true,false,_,[_,_,false,true,_,_,_,_,_,Link1],[_,_,_,_,_,_,_,_,_,Link],_, Link]).
+
+
 
 validTile(["*"|_]).
 validTile(["o"|_]).
 % [_,_,_,_,_,_,_,_,_,Link]
+validTile(["e",false,false,false,false|_]).
 validTile(["e",true,true,false,false, [_,_,_,_,_,_,_,_,_,Link],Tile_down,Tile_up,Tile_right, Link]).
 validTile(["e",true,false,true,false, [_,_,_,_,_,_,_,_,_,Link],Tile_down,[_,_,_,_,_,_,_,_,_,Link],Tile_right, Link]).
 validTile(["e",false,true,true,false, Tile_Left,_,[_,_,_,_,_,_,_,_,_,Link],Tile_right, Link]).
 validTile(["e",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],Tile_down,Tile_up,_,Link]).
 validTile(["e",false,true,false,true,Tile_Left,_,Tile_up,_, Link]).
 validTile(["e",false,false,true,true,Tile_Left,Tile_down,[_,_,_,_,_,_,_,_,_,Link],_, Link]).
-validTile(["e",false,false,false,false|_]).
+
 
 
 process_subList_border([]).
@@ -189,12 +186,12 @@ process_subList_border([Sublist|Sublists]):-
 
 illegal_Down(Tile):-
     Tile = [_,_,Down,_,_,_,_,UpTile,_,_],
-  %  blackOneFromDownBorder(UpTile),
+    blackOneFromDownBorder(UpTile),
     Down = false.
 
 illegal_Up(Tile):-
     Tile = [_,_,_,Up,_,_,DownTile,_,_,_],
-   % blackOneFromUpBorder(DownTile),
+    blackOneFromUpBorder(DownTile),
     Up = false.
 illegal_Right(Tile):-
     get_elements_from_tile(Tile,[_, _, _, _,Right]),
@@ -202,9 +199,7 @@ illegal_Right(Tile):-
 illegal_Left(Tile):-
     get_elements_from_tile(Tile,[_, Left, _, _, _]),
     Left = false.
-write_Puzzle(Puzzle):-
 
-    maplist(write_line,Puzzle).
 write_line(Line):-
     maplist(write_tile,Line),
     writeln("").
@@ -322,32 +317,6 @@ getFirstLink([[Tile|RestOfLine]|RestOfPuzzle],FirstLink):-
 
 getFirstLink([[]|RestOfPuzzle]):-
     getFirstLink(RestOfPuzzle).
-test42_Puzzle(Link,Puzzle).
-     %(foreach(member(Line,Puzzle),foreach(member(Tile,Line),test42(Tile,Link)))->
-     %true
-     %;
-     %writeln(2)
-
-     %).
-
-test42(["e",Left,Down,Up,Right, A, B, C, D, Link],FirstLink):-
-
-    (Link == FirstLink ->
-
-   nonvar(Left),
-   nonvar(Right),
-   nonvar(Down),
-   nonvar(Up)
-
-
-    ;
-    true
-    ).
-
-    test42(["*",Left,Down,Up,Right, _, _, _, _, Link],FirstLink).
-    test42(["o",Left,Down,Up,Right, _, _, _, _, Link],FirstLink).
-
-
 
 test(Tile,FirstLink):-
 
@@ -550,4 +519,4 @@ validTile_control(Tile):-
 
 eTile(["e",false,false,false,false|_]).
 :- run.
-%:- halt.
+:- halt.
