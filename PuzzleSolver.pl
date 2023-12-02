@@ -1,8 +1,6 @@
-%:- use_module(library(clpfd)).
-run:-
-    writeln("test"),
-    current_prolog_flag(argv, [_,Infile,Outfile|_]),
 
+run:-
+    current_prolog_flag(argv, [_,Infile,Outfile|_]),
     read_File(Infile, Outfile).
 
 
@@ -10,8 +8,8 @@ run:-
 read_File(Infile, Outfile):-
         open(Infile, read, Stream),
         read_lines_find_size(Stream, not_in_list, [], Puzzles_out),
-       writeln(Infile),
-       writeln(Outfile),
+
+
        maplist(connect_Puzzles,Puzzles_out),
        maplist(solve_Puzzle, Puzzles_out),
 
@@ -31,20 +29,19 @@ connect_Puzzles(Puzzle):-
 
 solve_Puzzle(Puzzle):-
     maplist(unnamed_line,Puzzle),
-    writeln("unnamed_line done"),
+
     borders(Puzzle),
-    writeln("borders done"),
+
     threeWhitePuzzle(Puzzle),!,
-    writeln("search start"),!,
+
     maplist(color,Puzzle),
 
 
 
-%    Puzzle = [Line1, Line2, Line3, Line4, Line5, Line6, Line7, Line8, Line9, Line10, Line11, Line12, Line13, Line14, Line15],
- %  Puzzle1 = [Line7, Line8, Line6, Line9, Line5, Line10, Line11, Line4, Line12, Line3, Line13, Line2, Line14, Line1, Line15],
 
 
-    %maplist(valid_Line,Puzzle),
+
+
    preventCircles(Puzzle).
 write_Puzzles(Stream,Puzzle):-
     writePuzzleDone(Puzzle,Stream).
@@ -56,7 +53,7 @@ color(Line):-
 
 unnamed_line(Line):-
     maplist(unnamed_tile,Line).
-% [_ | Tile_Left,Tile_down,Tile_up,Tile_right, Link]
+
 unnamed_tile(Tile):-
     Tile = [_,_,Down1,_,Right1, _,Tile_Down,_,Tile_Right, _],
     (  Tile_Down == [] ->
@@ -84,7 +81,7 @@ borders(Puzzle):-
 
 read_lines_find_size(Stream,not_in_list,Puzzles_in, Puzzles_out):-
     read_line_to_string(Stream,Line),
-    writeln(Line),
+
     (Line == end_of_file ->
 
     Puzzles_out = Puzzles_in
@@ -115,8 +112,8 @@ read_lines_to_list(Stream, in_list, Width,Height, Creation_list,Puzzle):-
         read_line_to_string(Stream, Line),
 
         process_line(Line,List_Line),
-         write("   "),
-         writeln(Line),
+
+
         append(Creation_list,[List_Line],Appended_List),
         (Line == end_of_file -> true ;
         read_lines_to_list(Stream, in_list, Width,Height, Appended_List,  Puzzle)
@@ -146,33 +143,32 @@ get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]):-
 
 validTile(["*"|_]).
 validTile(["o"|_]).
-% [_,_,_,_,_,_,_,_,_,Link]
-validTile(["e",false,false,false,false|_]).
-validTile(["e",false,true,true,false, Tile_Left,_,[_,_,_,_,_,_,_,_,_,Link],Tile_right, Link]).
-validTile(["e",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],Tile_down,Tile_up,_,Link]).
-validTile(["e",true,true,false,false, [_,_,_,_,_,_,_,_,_,Link],Tile_down,Tile_up,Tile_right, Link]).
-validTile(["e",true,false,true,false, [_,_,_,_,_,_,_,_,_,Link],Tile_down,[_,_,_,_,_,_,_,_,_,Link],Tile_right, Link]).
-validTile(["e",false,true,false,true,Tile_Left,_,Tile_up,_, Link]).
-validTile(["e",false,false,true,true,Tile_Left,Tile_down,[_,_,_,_,_,_,_,_,_,Link],_, Link]).
 
-valid_Line(Line):-
- maplist(validTile,Line).
+validTile(["e",false,false,false,false|_]).
+validTile(["e",false,true,true,false, _,_,[_,_,_,_,_,_,_,_,_,Link],_, Link]).
+validTile(["e",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],_,_,_,Link]).
+validTile(["e",true,true,false,false, [_,_,_,_,_,_,_,_,_,Link],_,_,_, Link]).
+validTile(["e",true,false,true,false, [_,_,_,_,_,_,_,_,_,Link],_,[_,_,_,_,_,_,_,_,_,Link],_, Link]).
+validTile(["e",false,true,false,true,_,_,_,_, _]).
+validTile(["e",false,false,true,true,_,_,[_,_,_,_,_,_,_,_,_,Link],_, Link]).
+
+
 
 noStraightLinesToBlack(["o"|_]).
 noStraightLinesToBlack(["e"|_]).
 noStraightLinesToBlack(["*",true,false,true,false,[_,true,false,false,true,_,_,_,_,Link],_,[_,false,true,true,false,_,_,_,_,Link],_,Link]).
-noStraightLinesToBlack(["*",false,false,true,true,_,_,[_,false,true,true,false,_,_,_,_,Link],[_,true,false,false,true,_,_,_,_,Link1],Link]).
-noStraightLinesToBlack(["*",false,true,false,true,_,[_,false,true,true,false,_,_,_,_,Link2],_,[_,true,false,false,true,_,_,_,_,Link1],Link]).
+noStraightLinesToBlack(["*",false,false,true,true,_,_,[_,false,true,true,false,_,_,_,_,Link],[_,true,false,false,true,_,_,_,_,_],Link]).
+noStraightLinesToBlack(["*",false,true,false,true,_,[_,false,true,true,false,_,_,_,_,_],_,[_,true,false,false,true,_,_,_,_,_],_]).
 
-noStraightLinesToBlack(["*",true,true,false,false,[_,true,false,false,true,_,_,_,_,Link],[_,false,true,true,false,_,_,_,_,Link1],_,_,Link]).
+noStraightLinesToBlack(["*",true,true,false,false,[_,true,false,false,true,_,_,_,_,Link],[_,false,true,true,false,_,_,_,_,_],_,_,Link]).
 
 cornerByWhite(["*"|_]).
 cornerByWhite(["e"|_]).
 
-cornerByWhite(["o",true,false,false,true,[_,false,_,_,true,_,_,_,_,Link],_,_,[_,_,_,_,true,_,_,_,_,Link1],Link]).
-cornerByWhite(["o",false,true,true,false,_,[_,_,true,_,_,_,_,_,_,Link1],[_,_,true,false,_,_,_,_,_,Link], _, Link]).
-cornerByWhite(["o",false,true,true,false,_,[_,_,false,true,_,_,_,_,_,Link1],[_,_,_,_,_,_,_,_,_,Link],_, Link]).
-cornerByWhite(["o",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],_,_,[_,true,_,_,false,_,_,_,_,Link1],Link]).
+cornerByWhite(["o",true,false,false,true,[_,false,_,_,true,_,_,_,_,Link],_,_,[_,_,_,_,true,_,_,_,_,_],Link]).
+cornerByWhite(["o",false,true,true,false,_,[_,_,true,_,_,_,_,_,_,_],[_,_,true,false,_,_,_,_,_,Link], _, Link]).
+cornerByWhite(["o",false,true,true,false,_,[_,_,false,true,_,_,_,_,_,_],[_,_,_,_,_,_,_,_,_,Link],_, Link]).
+cornerByWhite(["o",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],_,_,[_,true,_,_,false,_,_,_,_,_],Link]).
 
 
 
@@ -203,22 +199,6 @@ illegal_Left(Tile):-
     get_elements_from_tile(Tile,[_, Left, _, _, _]),
     Left = false.
 
-write_line(Line):-
-    maplist(write_tile,Line),
-    writeln("").
-
-write_tile(Tile):-
-    get_elements_from_tile(Tile,[Type,Left,Down,Up,Right]),
-    write(Type),
-    write(" "),
-    write(Left),
-    write(" "),
-    write(Down),
-    write(" "),
-    write(Up),
-    write(" "),
-    write(Right),
-    write(" ").
 
 writePuzzleDone(Puzzle, Stream):-
     write(Stream,"size "),
@@ -253,11 +233,7 @@ writeTileDone(Stream,["e",false,false,true,true|_]):-
     write(Stream,"\u2514").
 writeTileDone(Stream,["e",false,false,false,false|_]):-
     write(Stream," ").
-% ["e",true,false,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]
-% ["*",true,true,false,false,[_,true,false,false,true|Left_Rest],[_,false,true,true,false|Down_rest],_,_,Link]
 
-
-% ["e",true,false,false,true,Tile_Left,Tile_down,Tile_up,Tile_right, Link]
 
 
 
@@ -318,8 +294,7 @@ getFirstLink([[Tile|RestOfLine]|RestOfPuzzle],FirstLink):-
     ;
     getFirstLink([RestOfLine|RestOfPuzzle],FirstLink)).
 
-getFirstLink([[]|RestOfPuzzle]):-
-    getFirstLink(RestOfPuzzle).
+
 
 test(Tile,FirstLink):-
 
@@ -335,9 +310,7 @@ test(Tile,FirstLink):-
 
     .
 preventCircles(Puzzle):-
-    %writeln(22),
     getFirstLink(Puzzle, FirstLink),
-    %writeln(FirstLink),
     foreach(member(Line,Puzzle),foreach(member(Tile,Line),test(Tile,FirstLink)
     )).
 
@@ -345,8 +318,6 @@ connect_Tile(Tile_up,Tile_down,Tile_Left,Tile_right,Tile_Main):-
 
     Tile_Main = [_,_,_,_,_,Tile_Left,Tile_down,Tile_up,Tile_right,_].
 
-get_link(Tile,Link):-
-    Tile = [_, _, _, _, _, _, _, _, _, Link].
 
 
 
@@ -397,10 +368,6 @@ threeWhite(Tile):-
  threeWhiteHorizontal(Tile).
 
 
-%adjacentBlack(["*",false,true,false,true,["*",true,_,_,false|_],_,["*",_,false,true,_|_]|_]).
-%adjacentBlack(["*",true,true,false,false,_,_,["*",_,false,true,_|_],["*",false,_,_,true|_]|_]).
-%adjacentBlack(["*",true,false,true,false,_,["*",_,true,false,_|_],_,["*",false,_,_,true|_]|_]).
-%adjacentBlack(["*",false,false,true,true,["*",true,_,_,false|_],["*",_,true,false,_|_],|_]).
 
 adjacentHorizontalBlack(["*",true,_,_,false,_,_,_,["*",false,_,_,true|_]|_]).
 adjacentHorizontalBlack(["*",_,_,_,_,_,_,_,["e"|_]|_]).
@@ -462,13 +429,6 @@ blackTwoLeftWhite(["*",_,_,_,_,[]|_]).
 blackTwoLeftWhite(["o"|_]).
 blackTwoLeftWhite(["e"|_]).
 
-blackOneFromRightBorder(["*",true,_,_,false|_]).
-blackOneFromRightBorder(["o"|_]).
-blackOneFromRightBorder(["e"|_]).
-
-blackOneFromLeftBorder(["*",false,_,_,true|_]).
-blackOneFromLeftBorder(["o"|_]).
-blackOneFromLeftBorder(["e"|_]).
 
 blackOneFromUpBorder(["*",_,true,false,_|_]).
 blackOneFromUpBorder(["o"|_]).
@@ -493,33 +453,8 @@ threeWhiteLine(Line):-
 threeWhitePuzzle(Puzzle):-
     maplist(threeWhiteLine,Puzzle).
 
-circle_Tile([Tile|Line], Tile2):-
- (eTile(Tile) ->
- circle_Tile(Line,Tile2)
- ;
- Tile = [_,_,_,_,_,_,_,_,_,Link3] ,
-  Tile2 = [_,_,_,_,_,_,_,_,_,Link2],
-  Link3 == Link2,
-  circle_Tile(Line,Tile)
- ).
 
 
 
-
-
-
-% [_, _, _, _, _, _, _, _, _, Link]
-
-validTile_control(Tile):-
-    Tile = [Type,Left,Down,Up,Right, Tile_Left,Tile_down,Tile_up,Tile_right, _],
-    (nonvar(Left) ; nonvar(Right) ; nonvar(Down) ; nonvar(Up) ),
-    validTile_control(Tile_right).
-validTile_control([]).
-validTile_control(Tile):-
-    Tile = [Type,Left,Down,Up,Right, Tile_Left,Tile_down,Tile_up,Tile_right, _],
-    (var(Left) ; var(Down)  ; var(Right) ;var(Up)),
-    validTile_control(Tile_right).
-
-eTile(["e",false,false,false,false|_]).
 :- run.
 :- halt.
