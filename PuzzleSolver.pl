@@ -147,8 +147,8 @@ noStraightLinesToBlack(["o"|_]).
 noStraightLinesToBlack(["e"|_]).
 noStraightLinesToBlack(["*",false,false,true,true,_,_,[_,false,true,true,false,_,_,_,_,Link],[_,true,false,false,true,_,_,_,_,Link1],Link]).
 noStraightLinesToBlack(["*",true,false,true,false,[_,true,false,false,true,_,_,_,_,Link],_,[_,false,true,true,false,_,_,_,_,Link],_,Link]).
-noStraightLinesToBlack(["*",false,true,false,true,_,[_,false,true,true,false,_,_,_,_,Link2],_,[_,true,false,false,true,_,_,_,_,Link1],Link]).
 noStraightLinesToBlack(["*",true,true,false,false,[_,true,false,false,true,_,_,_,_,Link],[_,false,true,true,false,_,_,_,_,Link1],_,_,Link]).
+noStraightLinesToBlack(["*",false,true,false,true,_,[_,false,true,true,false,_,_,_,_,Link2],_,[_,true,false,false,true,_,_,_,_,Link1],Link]).
 
 
 cornerByWhite(["*"|_]).
