@@ -145,34 +145,33 @@ valid_Line(Line):-
  maplist(validTile,Line).
 noStraightLinesToBlack(["o"|_]).
 noStraightLinesToBlack(["e"|_]).
-noStraightLinesToBlack(["*",true,true,false,false,[_,true,false,false,true,_,_,_,_,Link],[_,false,true,true,false,_,_,_,_,Link1],_,_,Link]).
+noStraightLinesToBlack(["*",false,false,true,true,_,_,[_,false,true,true,false,_,_,_,_,Link],[_,true,false,false,true,_,_,_,_,Link1],Link]).
 noStraightLinesToBlack(["*",true,false,true,false,[_,true,false,false,true,_,_,_,_,Link],_,[_,false,true,true,false,_,_,_,_,Link],_,Link]).
 noStraightLinesToBlack(["*",false,true,false,true,_,[_,false,true,true,false,_,_,_,_,Link2],_,[_,true,false,false,true,_,_,_,_,Link1],Link]).
-noStraightLinesToBlack(["*",false,false,true,true,_,_,[_,false,true,true,false,_,_,_,_,Link],[_,true,false,false,true,_,_,_,_,Link1],Link]).
+noStraightLinesToBlack(["*",true,true,false,false,[_,true,false,false,true,_,_,_,_,Link],[_,false,true,true,false,_,_,_,_,Link1],_,_,Link]).
 
 
 cornerByWhite(["*"|_]).
 cornerByWhite(["e"|_]).
 
 cornerByWhite(["o",true,false,false,true,[_,false,_,_,true,_,_,_,_,Link],_,_,[_,_,_,_,true,_,_,_,_,Link1],Link]).
-cornerByWhite(["o",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],_,_,[_,true,_,_,false,_,_,_,_,Link1],Link]).
 cornerByWhite(["o",false,true,true,false,_,[_,_,true,_,_,_,_,_,_,Link1],[_,_,true,false,_,_,_,_,_,Link], _, Link]).
 cornerByWhite(["o",false,true,true,false,_,[_,_,false,true,_,_,_,_,_,Link1],[_,_,_,_,_,_,_,_,_,Link],_, Link]).
+cornerByWhite(["o",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],_,_,[_,true,_,_,false,_,_,_,_,Link1],Link]).
 
 
 
 validTile(["*"|_]).
 validTile(["o"|_]).
 % [_,_,_,_,_,_,_,_,_,Link]
+validTile(["e",false,false,false,false|_]).
 validTile(["e",false,true,true,false, Tile_Left,_,[_,_,_,_,_,_,_,_,_,Link],Tile_right, Link]).
 validTile(["e",true,false,false,true,[_,_,_,_,_,_,_,_,_,Link],Tile_down,Tile_up,_,Link]).
 validTile(["e",true,true,false,false, [_,_,_,_,_,_,_,_,_,Link],Tile_down,Tile_up,Tile_right, Link]).
 validTile(["e",true,false,true,false, [_,_,_,_,_,_,_,_,_,Link],Tile_down,[_,_,_,_,_,_,_,_,_,Link],Tile_right, Link]).
-
-
 validTile(["e",false,true,false,true,Tile_Left,_,Tile_up,_, Link]).
 validTile(["e",false,false,true,true,Tile_Left,Tile_down,[_,_,_,_,_,_,_,_,_,Link],_, Link]).
-validTile(["e",false,false,false,false|_]).
+
 
 
 process_subList_border([]).
@@ -520,4 +519,4 @@ validTile_control(Tile):-
 
 eTile(["e",false,false,false,false|_]).
 :- run.
-%:- halt.
+:- halt.
