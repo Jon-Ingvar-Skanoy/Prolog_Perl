@@ -28,7 +28,7 @@ connect_Puzzles(Puzzle):-
 
 
 solve_Puzzle(Puzzle):-
-    maplist(unnamed_line,Puzzle),
+    maplist(assign_Pointers_line,Puzzle),
 
     borders(Puzzle),
 
@@ -47,14 +47,14 @@ write_Puzzles(Stream,Puzzle):-
     writePuzzleDone(Puzzle,Stream).
 
 color(Line):-
-   maplist(noStraightLinesToBlack,Line),
+   maplist(straightLinesToBlack,Line),
    maplist(cornerByWhite,Line),
    maplist(validTile,Line).
 
-unnamed_line(Line):-
-    maplist(unnamed_tile,Line).
+assign_Pointers_line(Line):-
+    maplist(assign_Pointers_tile,Line).
 
-unnamed_tile(Tile):-
+assign_Pointers_tile(Tile):-
     Tile = [_,_,Down1,_,Right1, _,Tile_Down,_,Tile_Right, _],
     (  Tile_Down == [] ->
     true
@@ -154,13 +154,13 @@ validTile(["e",false,false,true,true,_,_,[_,_,_,_,_,_,_,_,_,Link],_, Link]).
 
 
 
-noStraightLinesToBlack(["o"|_]).
-noStraightLinesToBlack(["e"|_]).
-noStraightLinesToBlack(["*",true,false,true,false,[_,true,false,false,true,_,_,_,_,Link],_,[_,false,true,true,false,_,_,_,_,Link],_,Link]).
-noStraightLinesToBlack(["*",false,false,true,true,_,_,[_,false,true,true,false,_,_,_,_,Link],[_,true,false,false,true,_,_,_,_,_],Link]).
-noStraightLinesToBlack(["*",false,true,false,true,_,[_,false,true,true,false,_,_,_,_,_],_,[_,true,false,false,true,_,_,_,_,_],_]).
+straightLinesToBlack(["o"|_]).
+straightLinesToBlack(["e"|_]).
+straightLinesToBlack(["*",true,false,true,false,[_,true,false,false,true,_,_,_,_,Link],_,[_,false,true,true,false,_,_,_,_,Link],_,Link]).
+straightLinesToBlack(["*",false,false,true,true,_,_,[_,false,true,true,false,_,_,_,_,Link],[_,true,false,false,true,_,_,_,_,_],Link]).
+straightLinesToBlack(["*",false,true,false,true,_,[_,false,true,true,false,_,_,_,_,_],_,[_,true,false,false,true,_,_,_,_,_],_]).
 
-noStraightLinesToBlack(["*",true,true,false,false,[_,true,false,false,true,_,_,_,_,Link],[_,false,true,true,false,_,_,_,_,_],_,_,Link]).
+straightLinesToBlack(["*",true,true,false,false,[_,true,false,false,true,_,_,_,_,Link],[_,false,true,true,false,_,_,_,_,_],_,_,Link]).
 
 cornerByWhite(["*"|_]).
 cornerByWhite(["e"|_]).
@@ -296,7 +296,7 @@ getFirstLink([[Tile|RestOfLine]|RestOfPuzzle],FirstLink):-
 
 
 
-test(Tile,FirstLink):-
+test(FirstLink,Tile):-
 
 (Tile \= ["e",false,false,false,false|_]->
     Tile = [_,_,_,_,_, _,_,_,_, Link],
@@ -306,13 +306,17 @@ test(Tile,FirstLink):-
     ;
 
     true
-    )
+    ).
 
-    .
+
+
 preventCircles(Puzzle):-
     getFirstLink(Puzzle, FirstLink),
-    foreach(member(Line,Puzzle),foreach(member(Tile,Line),test(Tile,FirstLink)
-    )).
+    maplist(preventCircles_Line(FirstLink),Puzzle).
+
+
+    preventCircles_Line(Link,Line):-
+    maplist(test(Link),Line).
 
 connect_Tile(Tile_up,Tile_down,Tile_Left,Tile_right,Tile_Main):-
 
