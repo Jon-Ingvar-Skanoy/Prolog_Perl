@@ -28,7 +28,7 @@ connect_Puzzles(Puzzle):-
 
 
 solve_Puzzle(Puzzle):-
-    maplist(assign_Pointers_line,Puzzle),
+    maplist(unify_direction_line,Puzzle),
 
     borders(Puzzle),
 
@@ -51,10 +51,10 @@ color(Line):-
    maplist(cornerByWhite,Line),
    maplist(validTile,Line).
 
-assign_Pointers_line(Line):-
-    maplist(assign_Pointers_tile,Line).
+unify_direction_line(Line):-
+    maplist(unify_direction_tile,Line).
 
-assign_Pointers_tile(Tile):-
+unify_direction_tile(Tile):-
     Tile = [_,_,Down1,_,Right1, _,Tile_Down,_,Tile_Right, _],
     (  Tile_Down == [] ->
     true
